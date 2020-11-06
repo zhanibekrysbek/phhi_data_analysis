@@ -1,0 +1,16 @@
+
+ld = load('/home/zhanibek/codes/phhi_data_analysis/data/magnetometer_calib.mat')
+
+mag = ld.mag;
+accel = ld.accel;
+gyro = ld.gyro;
+
+figure(1)
+plot3(mag(:,1),mag(:,2),mag(:,3), 'o')
+grid on
+
+
+[A,b,expmfs] = magcal(mag);
+
+figure
+
