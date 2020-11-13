@@ -9,6 +9,7 @@ gyro = ld.gyro;
 
 figure(1)
 subplot(1,2,1)
+
 scatter3(mag(:,1),mag(:,2),mag(:,3))
 grid on
 
