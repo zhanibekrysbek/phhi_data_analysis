@@ -26,28 +26,11 @@ orient_smooth(:,2) = smooth(tnom,orient_interp(:,2),span2, method);
 orient_smooth(:,3) = smooth(tnom,orient_interp(:,3),span2, method);
 orient_smooth(:,4) = smooth(tnom,orient_interp(:,4),span2, method);
 
-
-% figure(10);
-% title('Smoothening')
-% subplot(2,1,1)
-% plot(tnom,pos_smooth);hold on;
-% plot(tnom,pos_interp,'.');hold off;
-% grid on;
-% xlabel('time, sec')
-% ylabel('m')
-% legend('x','y','z', 'x-meas', 'y-meas','z-meas')
-% subtitle('position')
-% title('Smoothening')
-% 
-% 
-% subplot(2,1,2)
-% plot(tnom,orient_smooth);hold on;
-% plot(tnom,orient_interp,'.');hold off;
-% grid on;
-% xlabel('time, sec')
-% ylabel('axis-angle')
-% legend('x','y','z', 'angle', 'x-meas', 'y-meas','z-meas','angle-meas')
-% subtitle('orientation')
-
 end
 
+
+
+function [force, torque] = lowpass_filter(force, torque, fs)
+
+
+end

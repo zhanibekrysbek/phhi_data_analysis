@@ -60,31 +60,64 @@ plot(obs.rft1.time_steps,obs.rft1.force); grid on;
 subplot(2,1,2)
 plot(obs.rft1.time_steps,obs.rft1.torque); grid on;
 
-%% Low Pass filter
+%% Low Pass filter for RFT
 
 
-force = obs.rft1.force;
-force = lowpass(force, 15, rftFS);
+fx = obs.rft1.force(:,1);
+% force = lowpass(force, 15, rftFS);
 
 
-y = fft(force);
+nfft = length(fx);          % number of samples
+nfft2 = 2.^nextpow2(nfft);
+y = fft(fx, nfft2);
+y = y(1:nfft2/2);
 
-n = length(force);          % number of samples
-f = (0:n-1)*(rftFS/n);     % frequency range
-power = log10(abs(y).^2/n);    % power of the DFT
+xfft = rftFS.*(0:nfft2/2-1)/nfft2;
+
 
 figure(3)
-plot(f,power)
-legend('x','y','z')
+plot(xfft,abs(y/max(y)));
+% legend('x','y','z')
 xlabel('Frequency')
 ylabel('Power')
 grid on;
 
 
+cutoff = 10/rftFS/2;
+h = fir1(32,cutoff);
+fx_filt = conv(fx,h);
+
 figure(4)
-subplot(2,1,1)
-plot(tnom, force); grid on;
-legend('x','y','z')
-subplot(2,1,2)
-plot(obs.rft1.time_steps,obs.rft1.torque); grid on;
-legend('x','y','z')
+subplot(211)
+plot(tnom, fx);
+subplot(212)
+plot(fx_filt);
+
+% figure(4)
+% subplot(2,1,1)
+% plot(tnom, force); grid on;
+% legend('x','y','z')
+% subplot(2,1,2)
+% plot(obs.rft1.time_steps,obs.rft1.torque); grid on;
+% legend('x','y','z')
+
+
+
+%% 
+
+dp=0.01;
+ds=0.01;
+fp=0.36-595*10^-4;
+fs=0.44+595*10^-4;
+Fsampl=2;
+
+[nbut_ord, wn] = buttord(2*fp/Fsampl, 2*fs/Fsampl,-20*log10(1-dp),-20*log10(ds));
+[b_but,a_but] = butter(nbut_ord, wn);
+Hbut=freqz(b_but,a_but,501);
+figure
+plot(abs(Hbut))
+title('Butterworth lowpass filter magnitude response')
+xlabel('frequency')
+ylabel('magnitude')
+nbut_ord
+
