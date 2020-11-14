@@ -1,8 +1,9 @@
 
-
+clc;clear;
 %% Load the data
-base_path = '/home/zhanibek/codes/phhi_data_analysis/data/preprocessed_v1';
-clear observations;
+
+
+base_path = '../../data/preprocessed_v1';
 
 files = dir(base_path);
 
@@ -17,7 +18,6 @@ for i=1:numel(files)
             observations(i-2).(fns{fn}) = ld.(fns{fn});
         end
     end
-    
 end
 
 %% Preprocess
@@ -36,10 +36,9 @@ observations_processed = observations;
 
 %% Interpolation
 
-obs = observations_processed(1);
+obs = observations_processed(100);
 
 % Interpolation
-rftFS = 1000;
 tf = max(obs.rft1.time_steps(end), obs.rft2.time_steps(end));
 tnom = 0:1/rftFS:tf;
 
@@ -62,62 +61,41 @@ plot(obs.rft1.time_steps,obs.rft1.torque); grid on;
 
 %% Low Pass filter for RFT
 
-
 fx = obs.rft1.force(:,1);
-% force = lowpass(force, 15, rftFS);
+
+%Filter design
+Fs = 1000;
+Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',12.5, ...
+       'DesignMethod','window','Window',{@kaiser,3},'SampleRate',Fs);
+
+%Plot magnitude of the filter
+fvtool(Hd,1,'Fs',1000)
+
+%Filter signal
+fxtild = filter(Hd,fx);
+
+%Plot frequency content of original signal vs frequency content of the
+%filtered signal (this is in terms of omega, can also show it in hertz)
+figure(5);
+subplot(2,1,1);
+x=linspace(0,2*pi,length(fx));
+plot(x,abs(fft(fx))/max(abs(fft(fx))))
+title('fft of original signal')
+
+subplot(2,1,2);
+plot(x,abs(fft(fxtild))/max(abs(fft(fxtild))))
+title('fft of filtered signal')
 
 
-nfft = length(fx);          % number of samples
-nfft2 = 2.^nextpow2(nfft);
-y = fft(fx, nfft2);
-y = y(1:nfft2/2);
-
-xfft = rftFS.*(0:nfft2/2-1)/nfft2;
-
-
-figure(3)
-plot(xfft,abs(y/max(y)));
-% legend('x','y','z')
-xlabel('Frequency')
-ylabel('Power')
+%Plot signals in time domain
+figure(5)
+subplot(2,1,1);
+plot(tnom,fx)
+title('original signal')
 grid on;
 
-
-cutoff = 10/rftFS/2;
-h = fir1(32,cutoff);
-fx_filt = conv(fx,h);
-
-figure(4)
-subplot(211)
-plot(tnom, fx);
-subplot(212)
-plot(fx_filt);
-
-% figure(4)
-% subplot(2,1,1)
-% plot(tnom, force); grid on;
-% legend('x','y','z')
-% subplot(2,1,2)
-% plot(obs.rft1.time_steps,obs.rft1.torque); grid on;
-% legend('x','y','z')
-
-
-
-%% 
-
-dp=0.01;
-ds=0.01;
-fp=0.36-595*10^-4;
-fs=0.44+595*10^-4;
-Fsampl=2;
-
-[nbut_ord, wn] = buttord(2*fp/Fsampl, 2*fs/Fsampl,-20*log10(1-dp),-20*log10(ds));
-[b_but,a_but] = butter(nbut_ord, wn);
-Hbut=freqz(b_but,a_but,501);
-figure
-plot(abs(Hbut))
-title('Butterworth lowpass filter magnitude response')
-xlabel('frequency')
-ylabel('magnitude')
-nbut_ord
+subplot(2,1,2);
+plot(tnom,fxtild)
+title('filtered signal')
+grid on;
 
