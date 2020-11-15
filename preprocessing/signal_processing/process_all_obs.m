@@ -20,19 +20,31 @@ for i=1:numel(files)
     end
 end
 
-%% Preprocess
+%% Preprocess RFT
 
 rftFS = 1000;
 imuFS = 100;
+cutoff = 12.5;
+
+Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',cutoff, ...
+       'DesignMethod','window','Window',{@kaiser,3},'SampleRate',rftFS);
+   
+rft_ids = {'C00300119','C00300122'};
 
 observations_processed = observations;
+method = 'pchip';
 
-% for i=1:numel(observations_processed)
-%     
-%     obs = observations_processed(i);
-%     
-% 
-% end
+for i=1:numel(observations_processed)
+    
+    observations_processed(i) = process_rft(observations(i));
+    
+end
+
+%%
+
+figure(1);
+plot_rfts(observations_processed(randi(numel(observations))))
+
 
 %% Interpolation
 
@@ -47,21 +59,17 @@ obs.rft1.force = interp1(obs.rft1.time_steps, obs.rft1.force, tnom, method);
 obs.rft1.torque= interp1(obs.rft1.time_steps, obs.rft1.torque, tnom, method);
 obs.rft1.time_steps = tnom;
 
-% figure(1)
-% subplot(2,1,1)
-% plot(tnom,force_interp); grid on;
-% subplot(2,1,2)
-% plot(tnom,torque_interp); grid on;
-
-figure(2)
+figure(1)
 subplot(2,1,1)
 plot(obs.rft1.time_steps,obs.rft1.force); grid on;
+legend('x','y','z')
 subplot(2,1,2)
 plot(obs.rft1.time_steps,obs.rft1.torque); grid on;
+legend('x','y','z')
 
 %% Low Pass filter for RFT
 
-fx = obs.rft1.force(:,1);
+fx = obs.rft1.torque(:,:);
 
 %Filter design
 Fs = 1000;
@@ -69,7 +77,7 @@ Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',12.5, ...
        'DesignMethod','window','Window',{@kaiser,3},'SampleRate',Fs);
 
 %Plot magnitude of the filter
-fvtool(Hd,1,'Fs',1000)
+% fvtool(Hd,1,'Fs',1000);
 
 %Filter signal
 fxtild = filter(Hd,fx);
@@ -88,7 +96,7 @@ title('fft of filtered signal')
 
 
 %Plot signals in time domain
-figure(5)
+figure(6)
 subplot(2,1,1);
 plot(tnom,fx)
 title('original signal')

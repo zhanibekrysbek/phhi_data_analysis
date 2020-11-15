@@ -1,11 +1,13 @@
 
 
 
-ld = load('/home/zhanibek/codes/phhi_data_analysis/data/obs_example_4.mat');
+% ld = load('/home/zhanibek/codes/phhi_data_analysis/data/obs_example_4.mat');
 
-tpos = ld.pose123.time_steps;
-position = ld.pose123.position;
-orientation = ld.pose123.orientation;
+obs = observations(10);
+
+tpos = obs.pose123.time_steps;
+position = obs.pose123.position;
+orientation = obs.pose123.orientation;
 
 tpos = [0 tpos];
 position = [position(1,:); position];
