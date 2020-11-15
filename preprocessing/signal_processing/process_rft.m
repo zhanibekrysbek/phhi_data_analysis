@@ -1,4 +1,4 @@
-function obs = process_rft(obs)
+function [obs,tf] = process_rft(obs)
 %SMOOTH_POSE Summary of this function goes here
 %   Detailed explanation goes here
     
