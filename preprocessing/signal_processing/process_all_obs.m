@@ -1,8 +1,8 @@
 
-clc;clear;
+
 %% Load the data
 
-
+clc;clear;
 base_path = '../../data/preprocessed_v1';
 
 files = dir(base_path);
@@ -32,29 +32,23 @@ Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',cutoff, ...
 rft_ids = {'C00300119','C00300122'};
 
 observations_processed = observations;
-method = 'pchip';
 
-for i=1:numel(observations_processed)
+for i=progress(1:numel(observations_processed))
     
     [observations_processed(i),tf] = process_rft(observations(i));
     
+    % ARUCO Pose Data
     % Outlier removal
-    obs = observations_processed(i);
+%     obs = observations_processed(i);
 
-    method = 'median';
-%     [obs.pose123.position,I] = rmoutliers(obs.pose123.position,method);
+    observations_processed(i) = process_pose(observations_processed(i),tf);
     
-    obs.pose123.orientation(:,4) = unwrap(obs.pose123.orientation(:,4),1.98*pi);
-    [obs.pose123.orientation,I] = rmoutliers(obs.pose123.orientation,method);
-
-    obs.pose123.time_steps = obs.pose123.time_steps(~I);
-    obs.pose123.position = obs.pose123.position(~I,:);
-    observations_processed(i) = obs;
+%     observations_processed(i) = obs;
 end
 
 
 %% Plot a dozen of samples
-for i=1:10
+for i=progress(21:40)
     obs = observations_processed(i);
     obs2 = observations(i);
     

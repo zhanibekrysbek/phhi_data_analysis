@@ -3,7 +3,7 @@
 
 % ld = load('/home/zhanibek/codes/phhi_data_analysis/data/obs_example_4.mat');
 
-obs = observations(10);
+obs = observations(79);
 
 tpos = obs.pose123.time_steps;
 position = obs.pose123.position;
@@ -13,6 +13,7 @@ tpos = [0 tpos];
 position = [position(1,:); position];
 orientation = [orientation(1,:);orientation];
 %% Interpolation
+
 fs = 100;
 tnom = 0:1/fs:tpos(end);
 
@@ -84,3 +85,21 @@ xlabel('time, sec')
 ylabel('axis-angle')
 legend('x','y','z', 'angle', 'x-meas', 'y-meas','z-meas','angle-meas')
 subtitle('orientation')
+
+
+
+
+%% 2D plot
+
+figure(1);
+plot(pos_smooth(:,1), pos_smooth(:,2), 'LineWidth',2)
+% daspect([1 1 1])
+axis equal;
+title(sprintf('%s %s', obs.traj_type, obs.motion_type))
+grid on
+xlim([-0.1 2.9])
+
+
+
+
+
