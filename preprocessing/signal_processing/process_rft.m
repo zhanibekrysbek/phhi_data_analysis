@@ -1,5 +1,5 @@
 function [obs,tf] = process_rft(obs)
-%SMOOTH_POSE Summary of this function goes here
+%PROCESS_RFT Summary of this function goes here
 %   Detailed explanation goes here
     
     % Constants

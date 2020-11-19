@@ -1,6 +1,9 @@
 function [obs] = process_pose(obs, tf)
-%process_pose Summary of this function goes here
-%   Detailed explanation goes here
+%process_pose Processes pose data from ARUCO
+%   1. Outlier removal using quantile ranges
+%   2. Interpolation at nominal 100Hz
+%   3. Smoothing using Robust Lowess method
+%   4. Computes Linear velocity from smoothed position data
 
     obs = outlier_removal(obs);
     position = obs.pose123.position;
@@ -20,8 +23,8 @@ function [obs] = process_pose(obs, tf)
     orient_interp = interp1(tpos,orientation,tnom, method);
 
     % Smoothening
-    span1 = 0.1;
-    span2 = 0.05;
+    span1 = 0.12;
+    span2 = 0.06;
 
     method = 'rlowess';
     pos_smooth = zeros(size(pos_interp));
@@ -32,14 +35,18 @@ function [obs] = process_pose(obs, tf)
     orient_smooth = zeros(size(orient_interp));
     orient_smooth(:,1) = smooth(tnom,orient_interp(:,1),span2, method);
     orient_smooth(:,2) = smooth(tnom,orient_interp(:,2),span2, method);
-    orient_smooth(:,3) = smooth(tnom,orient_interp(:,3),span2, method);
+    orient_smooth(:,3) = smooth(tnom,orient_interp(:,3),span1, method);
     orient_smooth(:,4) = smooth(tnom,orient_interp(:,4),span2, method);
 
     obs.pose123.time_steps = tnom;
     obs.pose123.position = pos_smooth;
     obs.pose123.orientation = orient_smooth;
     
+    % Get Linear Velocity
+    obs = get_velocity(obs,fs);
     
+    % TODO:
+    % Get angular velocity
 end
 
 
@@ -73,6 +80,14 @@ function obs = outlier_removal(obs)
     obs.pose123.orientation = obs.pose123.orientation.*sign(obs.pose123.orientation(:,3));
     obs.pose123.orientation(:,4) = unwrap(obs.pose123.orientation(:,4));
 
+end
+
+
+function obs = get_velocity(obs,fs)
+
+    vel = diff(obs.pose123.position)*fs;
+    vel = [0 0 0; vel];
+    obs.pose123.linvel = vel;
 end
 
 
