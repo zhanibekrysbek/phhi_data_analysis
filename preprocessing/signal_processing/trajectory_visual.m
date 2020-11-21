@@ -45,7 +45,7 @@ text( 1.35,-0.05, 'Obs', 'FontSize',12)
 %% Individual Trajectory
 % close(h)
 h = figure(11);
-obs = observations(20);
+obs = observations(9);
 
 subplot(2,2,1)
 plot(obs.pose123.position(:,1), obs.pose123.position(:,2), 'LineWidth',2);
@@ -56,28 +56,42 @@ ylim([-1.4 1.2]);
 subtitle('2D Trajectory')
 
 subplot(2,2,3)
+plot(obs.pose123.position(:,1), obs.pose123.linvel(:,1), 'LineWidth',2);
+hold on;
 plot(obs.pose123.position(:,1), obs.pose123.linvel(:,2), 'LineWidth',2);
-grid on; box on;xlabel('x-axis, m');
+plot(obs.pose123.position(:,1), vecnorm(obs.pose123.linvel(:,1:2),2,2),'k--', 'LineWidth',1);
+hold off;
+grid on; box on;
+xlabel('x-axis, m');
 ylabel('v_y, m/s');
 ylim([-1.4 1.2])
+legend('v_x', 'v_y', 'v_{xy}')
 subtitle('Velocity (y-axis) vs horizontal Distance')
 
 subplot(2,2,2)
-plot(obs.pose123.time_steps, obs.pose123.linvel(:,1), 'LineWidth',2);
+plot(obs.pose123.time_steps, obs.pose123.linvel(:,1), 'LineWidth',2); hold on;
+plot(obs.pose123.time_steps, obs.pose123.linvel(:,2), 'LineWidth',2);
+plot(obs.pose123.time_steps, vecnorm(obs.pose123.linvel(:,1:2),2,2),'k--', 'LineWidth',1);hold off;
+legend('v_x', 'v_y', 'v_{xy}')
 grid on; box on;
 xlabel('time, sec');
 ylabel('v_x, m/s');
-ylim([min(min(obs.pose123.linvel(:,1:2))) max(max(obs.pose123.linvel(:,1:2)))])
+% ylim([min(min(obs.pose123.linvel(:,1:2))) max(max(obs.pose123.linvel(:,1:2)))])
 subtitle('Velocity in x-axis vs time')
 
 
 subplot(2,2,4)
-plot(obs.pose123.time_steps, obs.pose123.linvel(:,2), 'LineWidth',2);
+plot(obs.pose123.position(:,2), obs.pose123.linvel(:,1), 'LineWidth',2);
+hold on;
+plot(obs.pose123.position(:,2), obs.pose123.linvel(:,2), 'LineWidth',2);
+plot(obs.pose123.position(:,2), vecnorm(obs.pose123.linvel(:,1:2),2,2),'k--', 'LineWidth',1);
+hold off
 grid on; box on;
 xlabel('time, sec');
 ylabel('v_y, m/s');
-ylim([min(min(obs.pose123.linvel(:,1:2))) max(max(obs.pose123.linvel(:,1:2)))])
+ylim([-0.8 0.8])
 subtitle('Velocity in y-axis vs time')
+xlim([-0.8 0.8])
 
 sgtitle('Single Example')
 

@@ -10,21 +10,17 @@ observations = load_data(base_path);
 
 %% Preprocess RFT and Pose
 
-rftFS = 1000;
-imuFS = 100;
-cutoff = 12.5;
-
-Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',cutoff, ...
-       'DesignMethod','window','Window',{@kaiser,3},'SampleRate',rftFS);
+% Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',cutoff, ...
+%        'DesignMethod','window','Window',{@kaiser,3},'SampleRate',rftFS);
    
 rft_ids = {'C00300119','C00300122'};
-
-observations_processed = observations;
+observations_processed(numel(observations)) = struct('pose123',[], 'motion_type',[],...
+            'obs_id',[], 'imu',[], 'traj_type', [], 'rft1',[], 'rft2',[], 'fsum',[], 'fstretch',[]);
 
 for i=progress(1:numel(observations_processed))
     
     [observations_processed(i),tf] = process_rft(observations(i));
-    
+     
     % ARUCO Pose Data
     % Removes Outliers,
     observations_processed(i) = process_pose(observations_processed(i),tf);
@@ -35,23 +31,23 @@ end
 %% IMU
 obs = observations(1);
 
-tf = max(obs.rft1.time_steps(end), obs.rft2.time_steps(end));
+Fs = 100;
+tf = min(obs.rft1.time_steps(end), obs.rft2.time_steps(end));
+tf = round(tf - 0.005,2);
 tnom = 0:1/100:tf; % nominal time that will be common for both forces
 
 method = 'pchip';
 
 % Temporal alignement
-fx = interp1(obs.imu.time_steps, obs.imu.accel, tnom, method);
+fx = interp1(obs.imu.time_steps, obs.imu.accel(:,3), tnom, method);
 % obs.rft1.time_steps = tnom;
 
-Fs = 100;
-Hd = designfilt('lowpassfir','FilterOrder',10,'CutoffFrequency',15, ...
+
+Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',10, ...
        'DesignMethod','window','Window',{@kaiser,3},'SampleRate',Fs);
 
 % %Plot magnitude of the filter
-% fvtool(Hd,1,'Fs',1000)
-
-fx = obs.imu.accel;
+fvtool(Hd,1,'Fs',100)
 
 %Filter signal
 fxtild = filter(Hd,fx);
@@ -61,12 +57,13 @@ fxtild = filter(Hd,fx);
 figure(1)
 subplot(2,1,1);
 x=linspace(0,2*pi,length(fx));
-plot(x,abs(fft(fx)))
+plot(x,abs(fft(fx))/max(abs(fft(fx))))
 grid on;
 title('fft of original signal')
 
 subplot(2,1,2);
-plot(x,abs(fft(fxtild)))
+plot(x,abs(fft(fxtild))/max(abs(fft(fxtild))))
+grid on;
 title('fft of filtered signal')
 
 
@@ -100,19 +97,6 @@ for i=progress(1:numel(observations_processed), 'Title', 'Saving the data')
     obs = observations_processed(i);
     save([base_path obs.obs_id '.mat'], '-struct','obs');
 end
-%% Get Velocity Profile
-
-
-obs = observations_processed(1);
-
-figure(1);
-subplot(211);
-plot(obs.pose123.time_steps, obs.pose123.linvel)
-grid on;
-subplot(212);
-plot(obs.pose123.time_steps, obs.pose123.position)
-grid on;
-legend('x','y','z')
 
 
 %% Plot a dozen of samples
@@ -163,14 +147,3 @@ for i=progress(21:40)
             'Interpreter','none');
     
 end
-
-
-%% Plot Sample
-
-figure(1);
-ind = randi(numel(observations));
-plot_rfts(observations_processed(ind))
-
-
-
-
