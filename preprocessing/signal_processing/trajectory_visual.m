@@ -247,10 +247,8 @@ tlabels = {'AB1 '; 'AB2 '};
 figure(100)
 subplot(1,2,1)
 p=pie(mtype_count);
-
 title('Parallel vs Serial')
 legend(mlabels)
-
 
 subplot(1,2,2)
 p=pie(ttype_count);

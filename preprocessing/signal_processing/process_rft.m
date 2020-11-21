@@ -40,41 +40,8 @@ function [obs,tf] = process_rft(obs)
         obs.rft2 = temp;
     end
     
-    
-    
-
-    axangs = interp1(obs.pose123.time_steps, obs.pose123.orientation, obs.rft1.time_steps);
-
-    rotm = axang2rotm(axangs);
-    
-    force_s = zeros(size(obs.rft1.force));
-    force_s_1 = zeros(size(obs.rft1.force));
-    torque_s = zeros(size(obs.rft1.torque));
-    torque_s_1 = zeros(size(obs.rft1.torque));
-
-    for i=1:length(axangs)
-
-        force_s(i,:) = rotm(:,:,i)*obs.rft1.force(i,:)';
-        force_s_1(i,:) = rotm(:,:,i)*obs.rft2.force(i,:)';
-
-        torque_s(i,:) = rotm(:,:,i)*obs.rft1.torque(i,:)';
-        torque_s_1(i,:) = rotm(:,:,i)*obs.rft2.torque(i,:)';
-
-    end
-
-    obs.rft1.forceS = force_s;
-    obs.rft1.torqueS = torque_s;
-    
-    obs.rft2.forceS = force_s_1;
-    obs.rft2.torqueS = torque_s_1;
-    
-    obs.fsum.force = obs.rft1.force + obs.rft2.force;
-    obs.fsum.forceS = obs.rft1.forceS + obs.rft2.forceS;
-    obs.fsum.time_steps = obs.rft1.time_steps;
-    
-    obs.fstretch.force = obs.rft1.force - obs.rft2.force;
-    obs.fstretch.forceS = obs.rft1.forceS - obs.rft2.forceS;
-    obs.fstretch.time_steps = obs.rft1.time_steps;
+    obs.fsum = [];
+    obs.fstretch = [];
 
 end
 
