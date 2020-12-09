@@ -1,4 +1,4 @@
-function observations = load_data(base_path)
+function [observations,tb] = load_data(base_path)
 %load_data Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -18,6 +18,13 @@ function observations = load_data(base_path)
             ind = ind+1;
         end
     end
-
+    
+    tb = struct2table(observations);
+    tb = convertvars(tb, {'motion_type','traj_type', 'obs_id'}, 'string');
+    try
+        tb = removevars(tb, {'pose123', 'imu', 'rft1', 'rft2', 'fsum', 'fstretch'});
+    catch
+        tb = removevars(tb, {'pose123', 'imu', 'rft1', 'rft2'});
+    end
 end
 

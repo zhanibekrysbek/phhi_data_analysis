@@ -24,7 +24,7 @@ function [obs] = process_pose(obs, tf)
 
     % Smoothening
     span1 = 0.12;
-    span2 = 0.06;
+    span2 = 0.08;
 
     method = 'rlowess';
     pos_smooth = zeros(size(pos_interp));
@@ -35,8 +35,9 @@ function [obs] = process_pose(obs, tf)
     orient_smooth = zeros(size(orient_interp));
     orient_smooth(:,1) = smooth(tnom,orient_interp(:,1),span2, method);
     orient_smooth(:,2) = smooth(tnom,orient_interp(:,2),span2, method);
-    orient_smooth(:,3) = smooth(tnom,orient_interp(:,3),span1, method);
+    orient_smooth(:,3) = smooth(tnom,orient_interp(:,3),span2, method);
     orient_smooth(:,4) = smooth(tnom,orient_interp(:,4),span2, method);
+%     orient_smooth(:,1) = sqrt(1-sum(orient_smooth(:,2:3).^2,2));
 
     obs.pose123.time_steps = tnom;
     obs.pose123.position = pos_smooth;
@@ -45,10 +46,12 @@ function [obs] = process_pose(obs, tf)
     % Get Linear Velocity
     obs = get_velocity(obs,fs);
     
+    
+    obs = get_fsum(obs);
+    
     % TODO:
     % Get angular velocity
 end
-
 
 
 
@@ -80,8 +83,10 @@ function obs = outlier_removal(obs)
     obs.pose123.orientation = obs.pose123.orientation.*sign(obs.pose123.orientation(:,3));
     obs.pose123.orientation(:,4) = unwrap(obs.pose123.orientation(:,4));
     
-    
-    
+
+end
+
+function obs = get_fsum(obs)
     % Fsum, Fstretch
     axangs = interp1(obs.pose123.time_steps, obs.pose123.orientation, obs.rft1.time_steps);
 
@@ -116,7 +121,6 @@ function obs = outlier_removal(obs)
     obs.fstretch.force = obs.rft1.force - obs.rft2.force;
     obs.fstretch.forceS = obs.rft1.forceS - obs.rft2.forceS;
     obs.fstretch.time_steps = obs.rft1.time_steps;
-
 end
 
 
@@ -124,7 +128,10 @@ function obs = get_velocity(obs,fs)
 
     vel = diff(obs.pose123.position)*fs;
     vel = [0 0 0; vel];
-    obs.pose123.linvel = vel;
+      
+    vel_smooth = medfilt1(vel,5);
+    
+    obs.pose123.linvel = vel_smooth;
 end
 
 
