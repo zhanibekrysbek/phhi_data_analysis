@@ -45,8 +45,9 @@ function [obs] = process_pose(obs, tf)
     
     % Get Linear Velocity
     obs = get_velocity(obs,fs);
-    
-    
+    % Get Linear Acceleration
+    obs = get_acceleration(obs,fs);
+
     obs = get_fsum(obs);
     
     % TODO:
@@ -132,6 +133,16 @@ function obs = get_velocity(obs,fs)
     vel_smooth = medfilt1(vel,5);
     
     obs.pose123.linvel = vel_smooth;
+end
+
+function obs = get_acceleration(obs,fs)
+
+    acc = diff(obs.pose123.linvel)*fs;
+    acc = [acc; 0 0 0];
+      
+    acc_smooth = medfilt1(acc,5);
+    
+    obs.pose123.linacc = acc_smooth;
 end
 
 

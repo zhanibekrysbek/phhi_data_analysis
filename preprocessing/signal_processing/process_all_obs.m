@@ -25,6 +25,8 @@ for i=progress(1:numel(observations_processed), 'Title','Preprocessing')
     % Removes Outliers,
     observations_processed(i) = process_pose(observations_processed(i),tf);
     
+    observations_processed(i) = process_imu(observations_processed(i),tf);
+    
 %     observations_processed(i) = obs;
 end
 % profile viewer;

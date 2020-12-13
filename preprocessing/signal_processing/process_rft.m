@@ -40,10 +40,25 @@ function [obs,tf] = process_rft(obs)
         obs.rft2 = temp;
     end
     
+%     obs = process_torques(obs);
+    
     obs.fsum = [];
     obs.fstretch = [];
 
 end
+
+
+
+% function obs = process_torques(obs)
+%     
+%     rv1 = [ 0.2275, 0, -0.015];
+%     rv2 = [-0.2275, 0, -0.015];
+% 
+%     tcomp1 = cross(obs.rft1.torque, repmat(rv1,[numel(obs.rft1.time_steps), 1]));
+%     tcomp2 = cross(obs.rft2.torque, repmat(rv2,[numel(obs.rft2.time_steps), 1]));
+% 
+% 
+% end
 
 
 
