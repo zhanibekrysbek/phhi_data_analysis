@@ -11,6 +11,7 @@ function [obs] = process_imu(obs,tf)
     obs.imu.accel = interp1(obs.imu.time_steps,obs.imu.accel, tnom, method);
     obs.imu.gyro = interp1(obs.imu.time_steps,obs.imu.gyro, tnom, method);
     obs.imu.mag = interp1(obs.imu.time_steps,obs.imu.mag, tnom, method);
+    obs.imu.time_steps = tnom;
     
 end
 

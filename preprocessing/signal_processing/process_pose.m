@@ -47,7 +47,7 @@ function [obs] = process_pose(obs, tf)
     obs = get_velocity(obs,fs);
     % Get Linear Acceleration
     obs = get_acceleration(obs,fs);
-
+    % Get Fsum, Spatial and Body Frames
     obs = get_fsum(obs);
     
     % TODO:
@@ -88,7 +88,7 @@ function obs = outlier_removal(obs)
 end
 
 function obs = get_fsum(obs)
-    % Fsum, Fstretch
+    % Fsum, Fstretch in Body and Spatial frames
     axangs = interp1(obs.pose123.time_steps, obs.pose123.orientation, obs.rft1.time_steps);
 
     rotm = axang2rotm(axangs);
