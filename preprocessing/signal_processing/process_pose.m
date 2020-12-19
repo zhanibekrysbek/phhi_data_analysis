@@ -133,6 +133,15 @@ function obs = get_velocity(obs,fs)
     vel_smooth = medfilt1(vel,5);
     
     obs.pose123.linvel = vel_smooth;
+    
+    % Get Body Velocity
+    rotm = axang2rotm(obs.pose123.orientation);
+    
+    velB = zeros(size(obs.pose123.linvel));
+    for i=1:length(velB)
+        velB(i,:) = rotm(:,:,i)'*obs.pose123.linvel(i,:)';
+    end
+    obs.pose123.linvelB = velB;
 end
 
 function obs = get_acceleration(obs,fs)
@@ -143,6 +152,15 @@ function obs = get_acceleration(obs,fs)
     acc_smooth = medfilt1(acc,5);
     
     obs.pose123.linacc = acc_smooth;
+    
+    % Get Body Acceleration
+    rotm = axang2rotm(obs.pose123.orientation);
+    
+    accB = zeros(size(obs.pose123.linacc));
+    for i=1:length(accB)
+        accB(i,:) = rotm(:,:,i)'*obs.pose123.linacc(i,:)';
+    end
+    obs.pose123.linaccB = accB;
 end
 
 

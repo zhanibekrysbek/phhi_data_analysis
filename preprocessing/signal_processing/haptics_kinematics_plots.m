@@ -220,19 +220,19 @@ sgtitle(sprintf('%s    %s    %s    Kinematics', obs.obs_id, obs.traj_type, obs.m
 %% Quiver Vector Plot Function
 
 
-fig_path = '../../data/plots/plots_preprocessed_v2_1/trajectory_vector_body_fr/';
+fig_path = '../../data/plots/plots_preprocessed_v2_1/trajectory_vector_plot/';
 figure('visible','off');
 for ind=progress(1:numel(observations_processed), 'Title', 'TrajVectorPlot')
     
     obs = observations_processed(ind);
 
-    trajvector_plot(obs,2)
+    trajvector_plot(obs,1)
     saveas(gcf, [fig_path, obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'kinematics', '.jpg'])
 
 end
 %%
 
-obs = observations_processed(2);
+obs = observations_processed(50);
 figure(1)
 plot_phase(obs,1)
 

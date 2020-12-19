@@ -1,6 +1,7 @@
 function observations_processed = adjust_time(observations_processed)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%adjust_time Trim out observations at nominal start and end times.
+%   T_start is defined as 0.5 seconds earlier from the instance when Fz>5 (rising edge).
+%   Similarly T_end is defined 0.5 seconds after Fz<5 (falling edge).
 
 
 
@@ -60,7 +61,7 @@ function obs = shift_time(obs, offset0, offset1)
     obs.fstretch.force = obs.fstretch.force(I,:);
     obs.fstretch.forceS = obs.fstretch.forceS(I,:);
 
-
+    % Pose
     I = obs.pose123.time_steps >= t0 & obs.pose123.time_steps <= tf;
 
     obs.pose123.time_steps = obs.pose123.time_steps(I) - t0;
@@ -68,5 +69,14 @@ function obs = shift_time(obs, offset0, offset1)
     obs.pose123.position = obs.pose123.position(I,:);
     obs.pose123.orientation = obs.pose123.orientation(I,:);
     obs.pose123.linvel = obs.pose123.linvel(I,:);
+    obs.pose123.linvelB = obs.pose123.linvelB(I,:);
+    obs.pose123.linacc = obs.pose123.linacc(I,:);
+    obs.pose123.linaccB = obs.pose123.linaccB(I,:);
 
+    % IMU
+    obs.imu.time_steps = obs.imu.time_steps(I) - t0;
+    obs.imu.time_steps = obs.imu.time_steps - obs.imu.time_steps(1);
+    obs.imu.accel = obs.imu.accel(I,:);
+    obs.imu.gyro = obs.imu.gyro(I,:);
+    obs.imu.mag = obs.imu.mag(I,:);
 end
