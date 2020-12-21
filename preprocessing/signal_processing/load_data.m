@@ -26,5 +26,7 @@ function [observations,tb] = load_data(base_path)
     catch
         tb = removevars(tb, {'pose123', 'imu', 'rft1', 'rft2'});
     end
+    tb.order = [1:height(tb)]';
+    tb = [tb(:,end),tb(:,1:end-1)];
 end
 
