@@ -1,0 +1,27 @@
+
+
+Copy branch to your local folder
+	git clone (url to repo)
+
+
+Sync your current git branch with the remote repo. This does not change the code.
+	git fetch
+
+Check the status
+	git status
+
+
+Pull the changes from remote repo to your local code. This Changes the code.
+	git pull
+
+
+Add the specific codes 
+	git add (whatever files you want to add)
+
+
+Commit the changes of your code to your local git branch
+	git commit -m '(comment your changes)'
+
+
+Push the local changes to remote repo.
+	git push
