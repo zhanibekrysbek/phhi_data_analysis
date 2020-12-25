@@ -1,14 +1,14 @@
 function [] = trajvector_plot(obs, opt)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
-step = 40; % 1e-1 seconds
+step_ = 40; % 1e-1 seconds
 
 rv1 = [ 0.2275, 0, -0.015];
 rv2 = [-0.2275, 0, -0.015];
 
 
-inds = 1:step:numel(obs.pose123.time_steps);
-rftinds = 1:step*10:numel(obs.pose123.time_steps)*10;
+inds = 1:step_:numel(obs.pose123.time_steps);
+rftinds = 1:step_*10:numel(obs.pose123.time_steps)*10;
 
 % Compute Handle coordinates
 R = axang2rotm(obs.pose123.orientation(inds,:));
