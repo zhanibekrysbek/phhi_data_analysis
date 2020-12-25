@@ -31,18 +31,12 @@ for i=progress(1:numel(observations_processed), 'Title','Preprocessing')
 end
 % profile viewer;
 
-%% IMU
-obs = observations(1);
-
-tf = min(obs.rft1.time_steps(end), obs.rft2.time_steps(end));
-tf = round(tf - 0.005,2);
-tnom = 0:1/100:tf; % nominal time that will be common for both forces
-
-method = 'pchip';
+%% IMU Preprocessing 
+obs = observations_processed(1);
 
 % Temporal alignement
 % fx = interp1(obs.imu.time_steps, obs.imu.accel(:,3), tnom, method);
-fx = obs.rft1.force(:,3);
+fx = obs.imu.accel(:,1);
 % obs.rft1.time_steps = tnom;
 
 
@@ -50,14 +44,14 @@ fx = obs.rft1.force(:,3);
 %fx = obs.imu.accel(:,3);
 
 %Filter design
-Fs = 1000;
+Fs = 100;
 % Hd = designfilt('lowpassfir','FilterOrder',61,'CutoffFrequency',15, ...
 %        'DesignMethod','window','Window',{@kaiser,3},'SampleRate',Fs);
 
 %Hd = fir1(61,0.3);
 
 n = 101;
-wo = 12.5/(Fs/2);
+wo = 20/(Fs/2);
 %wo = 0.3;
 dp = 0.02;	
 ds = 0.008;
@@ -142,6 +136,41 @@ grid on;
 % plot(obs.imu.time_steps, obs.imu.accel); grid on;
 
 
+%% Low pass filtering using fft and ifft
+
+obs = observations(50);
+x = obs.rft1.torque(:,3);
+cutoff = 12.5;
+Fs = 1000;
+
+y = fft(x);     
+f = (0:length(y)-1)*Fs/length(y);
+
+n = length(x);                         
+fshift = (-n/2:n/2-1)*(Fs/n);
+yshift = fftshift(y);
+I = fshift<=cutoff & fshift>=-cutoff;
+yshift(~I) = 0;
+
+figure(1);
+plot(fshift,abs(yshift))
+title('Magnitude')
+
+ynew = ifftshift(yshift);
+xnew = ifft(ynew);
+
+figure(2);
+subplot(2,1,1);
+plot(x);%hold on;
+% plot(real(xnew)); hold off
+yl = ylim;
+subplot(2,1,2);
+plot(real(xnew));hold off;
+ylim(yl)
+
+legend('original', 'filtered')
+
+
 
 %% Save the data 1 by 1. GitHub has a strict limit to file size 100MB
 base_path = '../../data/preprocessed_v2_1/';
@@ -153,7 +182,7 @@ end
 
 
 %% Plot a dozen of samples
-for i=progress(21:30)
+for i=progress(21:25)
     obs = observations_processed(i);
     obs2 = observations(i);
     
@@ -200,3 +229,137 @@ for i=progress(21:30)
             'Interpreter','none');
     
 end
+
+
+
+
+%% Comparison of Force signals before and after low pass filter
+
+ind = 43;
+obs1 = observations(ind);
+[obs2,~] = process_rft(obs1);
+
+rft_ids = {'C00300119','C00300122'};
+% swap the sensors if variable names and sensor IDs are inconsistent
+if strcmp(obs1.rft1.frame_id, rft_ids{2})
+    temp = obs1.rft1;
+    obs1.rft1 = obs1.rft2;
+    obs1.rft2 = temp;
+end
+
+
+figure(1);
+
+subplot(3,1,1);
+plot(obs1.rft1.time_steps, obs1.rft1.force(:,1)); hold on;
+plot(obs2.rft1.time_steps, obs2.rft1.force(:,1)); hold off;
+subtitle('x axis')
+
+subplot(3,1,2);
+plot(obs1.rft1.time_steps, obs1.rft1.force(:,2)); hold on;
+plot(obs2.rft1.time_steps, obs2.rft1.force(:,2)); hold off;
+subtitle('y axis')
+
+subplot(3,1,3);
+f1 = plot(obs1.rft1.time_steps, obs1.rft1.force(:,3)); hold on;
+f2 = plot(obs2.rft1.time_steps, obs2.rft1.force(:,3)); hold off;
+subtitle('z axis')
+
+legend([f1,f2], {'before', 'after'});
+
+
+
+%% Comparison of RFT and Acceleration prior to filtering
+
+ind = 60;
+obs = observations(ind);
+[obs2,~] = process_rft(obs1);
+
+rft_ids = {'C00300119','C00300122'};
+% swap the sensors if variable names and sensor IDs are inconsistent
+if strcmp(obs.rft1.frame_id, rft_ids{2})
+    temp = obs.rft1;
+    obs.rft1 = obs.rft2;
+    obs.rft2 = temp;
+end
+
+% Constants
+rftFS = 1000;
+cutoff = 12.5;
+method = 'pchip';
+% Low pass filter
+Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',cutoff, ...
+       'DesignMethod','window','Window',{@kaiser,3},'SampleRate',rftFS);
+
+rft_ids = {'C00300119','C00300122'};
+
+tf = min(obs.rft1.time_steps(end), obs.rft2.time_steps(end))-0.005;
+tf = round(tf,2); % ceil to second decimal place
+% nominal time that will be common for both forces
+tnom = 0:1/rftFS:tf; 
+
+% Temporal alignement
+obs.rft1.force = interp1(obs.rft1.time_steps, obs.rft1.force, tnom, method);
+obs.rft1.torque= interp1(obs.rft1.time_steps, obs.rft1.torque, tnom, method);
+obs.rft1.time_steps = tnom;
+
+obs.rft2.force = interp1(obs.rft2.time_steps, obs.rft2.force, tnom, method);
+obs.rft2.torque= interp1(obs.rft2.time_steps, obs.rft2.torque, tnom, method);
+obs.rft2.time_steps = tnom;
+
+    
+    
+    
+    
+    
+fsum = obs.rft1.force + obs.rft2.force;
+obs.fsum.force = fsum;   
+obs.fsum.time_steps = obs.rft1.time_steps;
+figure(20);
+
+    subplot(3,1,1);
+    plot(obs.rft1.time_steps, fsum(:,1)); hold on;
+    plot(obs.imu.time_steps, obs.imu.accel(:,1)); hold off;
+    subtitle('x - axis')
+    grid on;
+
+    subplot(3,1,2);
+    plot(obs.rft1.time_steps, fsum(:,2)); hold on;
+    plot(obs.imu.time_steps, obs.imu.accel(:,2)); hold off;
+    subtitle('y - axis')
+    grid on;
+
+    subplot(3,1,3);
+    f1 = plot(obs.rft1.time_steps, fsum(:,3)); hold on;
+    a1 = plot(obs.imu.time_steps, obs.imu.accel(:,3)); hold off;
+    subtitle('z - axis')
+    grid on;
+
+    legend([f1,a1], {'force', 'accel'});
+
+
+
+figure(21);
+    subplot(2,1,1)
+    % Phase Angles
+    fsum_ph = atan2d(obs.fsum.force(:,2),obs.fsum.force(:,1));
+%     fsum_ph = unwrap(fsum_ph,180);
+
+    imuacc_ph = atan2d(obs.imu.accel(:,2), obs.imu.accel(:,1));
+%     imuacc_ph = unwrap(imuacc_ph,180);
+
+    fs = plot(obs.rft1.time_steps, fsum_ph,'.'); hold on;
+    iacc = plot(obs.imu.time_steps, imuacc_ph,'.'); hold off;
+
+    hold off; grid on;
+    ylabel('vector angles, deg');
+    xts = xticks;
+    xticks(xts(1):xts(end));
+
+    subplot(2,1,2)
+    % Signal Magnitude
+    fsm = plot(obs.fsum.time_steps, vecnorm(obs.fsum.force(:,1:2),2,2)); hold on;
+    iaccm = plot(obs.imu.time_steps, vecnorm(obs.imu.accel(:,1:2),2,2)); hold off;
+    grid on;
+
+

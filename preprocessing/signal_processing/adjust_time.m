@@ -7,12 +7,17 @@ function observations_processed = adjust_time(observations_processed)
 
 for ind = progress(1:numel(observations_processed), 'Title', 'Adjusting Time')
     obs = observations_processed(ind);
+    
+    obs = fix_imu_delay(obs);
+
+    
     if strcmp(obs.obs_id, 'Zhanibek_Sanket_2')
         obs = shift_time(obs, .5, 3.5);
     elseif strcmp(obs.obs_id, 'Sanket_Vignesh_2_19')
         obs = shift_time(obs, 1., 1.);
     else
-        % adjust by 0.5 secons on both sides 
+        % adjust by 0.5 secons on both sides to avoid catching the falling
+        % edge of previous observation.
         obs = shift_time(obs, .5, .5);
     end
     I1 = obs.rft1.force(:,3)>5;
@@ -22,6 +27,7 @@ for ind = progress(1:numel(observations_processed), 'Title', 'Adjusting Time')
     tf = max(max(obs.rft1.time_steps(I1)), max(obs.rft2.time_steps(I2)))+0.5;
     offset0 = round(t0-0.005, 2);
     offset1 = round(obs.rft1.time_steps(end)-tf-0.05,2);
+    
     
     observations_processed(ind) = shift_time(obs, offset0, offset1);
 end
@@ -74,9 +80,32 @@ function obs = shift_time(obs, offset0, offset1)
     obs.pose123.linaccB = obs.pose123.linaccB(I,:);
 
     % IMU
+    I = obs.imu.time_steps >= t0 & obs.imu.time_steps <= tf;
+    
     obs.imu.time_steps = obs.imu.time_steps(I) - t0;
     obs.imu.time_steps = obs.imu.time_steps - obs.imu.time_steps(1);
     obs.imu.accel = obs.imu.accel(I,:);
     obs.imu.gyro = obs.imu.gyro(I,:);
     obs.imu.mag = obs.imu.mag(I,:);
+    obs.imu.accelS = obs.imu.accelS(I,:);
+    obs.imu.gyroS = obs.imu.gyroS(I,:);
+    obs.imu.magS = obs.imu.magS(I,:);
+end
+
+
+
+function obs = fix_imu_delay(obs)
+% for inds = 1:38: toff = 0
+% for inds = 39:68: toff = 0.375
+% for inds = 69:112: toff = 0.355
+
+toff = 0;
+if contains(obs.obs_id,'Sanket_Vignesh') % inds = 39:68:
+    toff = 0.37;
+elseif contains(obs.obs_id, 'Zhanibek_Sanket') || contains(obs.obs_id, 'Zhanibek_Vignesh')
+    % inds = 69:112
+    toff = 0.35;
+end
+
+obs.imu.time_steps = obs.imu.time_steps + toff;
 end

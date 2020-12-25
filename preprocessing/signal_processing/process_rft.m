@@ -7,8 +7,8 @@ function [obs,tf] = process_rft(obs)
     cutoff = 12.5;
     method = 'pchip';
     % Low pass filter
-    Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',cutoff, ...
-           'DesignMethod','window','Window',{@kaiser,3},'SampleRate',rftFS);
+%     Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',cutoff, ...
+%            'DesignMethod','window','Window',{@kaiser,3},'SampleRate',rftFS);
 
     rft_ids = {'C00300119','C00300122'};
     
@@ -27,12 +27,17 @@ function [obs,tf] = process_rft(obs)
     obs.rft2.time_steps = tnom;
     
     % Low pass filter
-    obs.rft1.force = filter(Hd, obs.rft1.force);
-    obs.rft1.torque = filter(Hd, obs.rft1.torque);
+%     obs.rft1.force = filter(Hd, obs.rft1.force);
+%     obs.rft1.torque = filter(Hd, obs.rft1.torque);
+%     
+%     obs.rft2.force = filter(Hd, obs.rft2.force);
+%     obs.rft2.torque = filter(Hd, obs.rft2.torque);
+
+    obs = lowpass_rft(obs, rftFS, cutoff);
     
-    obs.rft2.force = filter(Hd, obs.rft2.force);
-    obs.rft2.torque = filter(Hd, obs.rft2.torque);
     
+    
+%     
     % swap the sensors if variable names and sensor IDs are inconsistent
     if strcmp(obs.rft1.frame_id, rft_ids{2})
         temp = obs.rft1;
@@ -48,6 +53,15 @@ function [obs,tf] = process_rft(obs)
 end
 
 
+
+function obs = lowpass_rft(obs,Fs, cutoff)
+    for ax = 1:3
+        obs.rft1.force(:,ax) = lowpass_fft(obs.rft1.force(:,ax), Fs, cutoff);
+        obs.rft1.torque(:,ax) = lowpass_fft(obs.rft1.torque(:,ax), Fs, cutoff);
+        obs.rft2.force(:,ax) = lowpass_fft(obs.rft2.force(:,ax), Fs, cutoff);
+        obs.rft2.torque(:,ax) = lowpass_fft(obs.rft2.torque(:,ax), Fs, cutoff);
+    end
+end
 
 % function obs = process_torques(obs)
 %     
