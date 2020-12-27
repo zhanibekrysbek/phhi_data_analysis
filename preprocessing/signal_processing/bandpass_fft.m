@@ -1,4 +1,4 @@
-function xnew = lowpass_fft(x, Fs, cutoff)
+function xnew = bandpass_fft(x, Fs, lcutoff, hcutoff)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
     y = fft(x);     % FFT  
@@ -7,7 +7,7 @@ function xnew = lowpass_fft(x, Fs, cutoff)
     fshift = (-n/2:n/2-1)*(Fs/n);
     yshift = fftshift(y);
     % Remove high frequency components
-    I = fshift<=cutoff & fshift>=-cutoff;
+    I = (fshift<=hcutoff & fshift>=lcutoff) | (fshift>=-hcutoff & fshift<=-lcutoff);
     yshift(~I) = 0;
     % Recover the signal from freq domain
     ynew = ifftshift(yshift);
