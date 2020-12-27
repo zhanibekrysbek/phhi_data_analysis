@@ -1,7 +1,7 @@
 
 
 
-ld = load('/home/zhanibek/codes/phhi_data_analysis/data/magnetic_north.mat');
+ld = load('../../data/magnetic_north.mat');
 
 % close; clc;
 
@@ -34,6 +34,7 @@ mag(:,2) = -mag(:,2);
 mag(:,3) = -mag(:,3);
 
 mag_vec = [0 0 0; mean(mag)];
+
 %% Plot IMU values
 
 figure(2)

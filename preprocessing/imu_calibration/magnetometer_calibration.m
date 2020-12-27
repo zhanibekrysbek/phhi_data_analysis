@@ -1,5 +1,5 @@
 
-ld = load('/home/zhanibek/codes/phhi_data_analysis/data/magnetometer_calib.mat');
+ld = load('../../data/magnetometer_calib.mat');
 
 t = ld.t;
 t = t-t(1);
@@ -11,14 +11,16 @@ figure(1)
 subplot(1,2,1)
 
 scatter3(mag(:,1),mag(:,2),mag(:,3))
-grid on
+grid on;
+axis equal;
 
 
 [A,b,expmfs] = magcal(mag);
 mag_cal = (mag-b)*A;
 subplot(1,2,2)
 scatter3(mag_cal(:,1),mag_cal(:,2),mag_cal(:,3))
-grid on
+grid on;
+axis equal;
 
 
 %% Plot raw calibration data
