@@ -31,7 +31,7 @@ for i=progress(1:numel(observations_processed), 'Title','Preprocessing')
 end
 % profile viewer;
 
-%% IMU Preprocessing 
+%% IMU Preprocessing
 obs = observations_processed(1);
 
 % Temporal alignement
@@ -138,10 +138,12 @@ grid on;
 
 %% Low pass filtering using fft and ifft
 
-obs = observations(50);
-x = obs.rft1.torque(:,3);
-cutoff = 12.5;
-Fs = 1000;
+obs = observations(112);
+x = obs.imu.accel(:,3);
+hcutoff = 12.5;
+lcutoff = 0.05;
+
+Fs = 100;
 
 y = fft(x);     
 f = (0:length(y)-1)*Fs/length(y);
@@ -149,7 +151,8 @@ f = (0:length(y)-1)*Fs/length(y);
 n = length(x);                         
 fshift = (-n/2:n/2-1)*(Fs/n);
 yshift = fftshift(y);
-I = fshift<=cutoff & fshift>=-cutoff;
+I = (fshift<=hcutoff & fshift>=lcutoff) | (fshift>=-hcutoff & fshift<=-lcutoff);
+
 yshift(~I) = 0;
 
 figure(1);
@@ -159,13 +162,17 @@ title('Magnitude')
 ynew = ifftshift(yshift);
 xnew = ifft(ynew);
 
+
+
 figure(2);
 subplot(2,1,1);
 plot(x);%hold on;
+grid on;
 % plot(real(xnew)); hold off
 yl = ylim;
 subplot(2,1,2);
 plot(real(xnew));hold off;
+grid on;
 ylim(yl)
 
 legend('original', 'filtered')
@@ -285,10 +292,10 @@ end
 
 % Constants
 rftFS = 1000;
-cutoff = 12.5;
+hcutoff = 12.5;
 method = 'pchip';
 % Low pass filter
-Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',cutoff, ...
+Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',hcutoff, ...
        'DesignMethod','window','Window',{@kaiser,3},'SampleRate',rftFS);
 
 rft_ids = {'C00300119','C00300122'};

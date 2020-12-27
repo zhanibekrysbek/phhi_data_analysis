@@ -4,7 +4,8 @@ function [obs,tf] = process_rft(obs)
     
     % Constants
     rftFS = 1000;
-    cutoff = 12.5;
+    lcutoff = 0;
+    hcutoff = 12.5;
     method = 'pchip';
     % Low pass filter
 %     Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',cutoff, ...
@@ -33,7 +34,7 @@ function [obs,tf] = process_rft(obs)
 %     obs.rft2.force = filter(Hd, obs.rft2.force);
 %     obs.rft2.torque = filter(Hd, obs.rft2.torque);
 
-    obs = lowpass_rft(obs, rftFS, cutoff);
+    obs = lowpass_rft(obs, rftFS, lcutoff, hcutoff);
     
     
     
@@ -45,34 +46,38 @@ function [obs,tf] = process_rft(obs)
         obs.rft2 = temp;
     end
     
-%     obs = process_torques(obs);
+    obs = process_torques(obs);
     
     obs.fsum = [];
     obs.fstretch = [];
-
+    
 end
 
 
 
-function obs = lowpass_rft(obs,Fs, cutoff)
+function obs = lowpass_rft(obs,Fs, lcutoff, hcutoff)
     for ax = 1:3
-        obs.rft1.force(:,ax) = lowpass_fft(obs.rft1.force(:,ax), Fs, cutoff);
-        obs.rft1.torque(:,ax) = lowpass_fft(obs.rft1.torque(:,ax), Fs, cutoff);
-        obs.rft2.force(:,ax) = lowpass_fft(obs.rft2.force(:,ax), Fs, cutoff);
-        obs.rft2.torque(:,ax) = lowpass_fft(obs.rft2.torque(:,ax), Fs, cutoff);
+        obs.rft1.force(:,ax) = bandpass_fft(obs.rft1.force(:,ax), Fs, lcutoff, hcutoff);
+        obs.rft1.torque(:,ax) = bandpass_fft(obs.rft1.torque(:,ax), Fs, lcutoff, hcutoff);
+        obs.rft2.force(:,ax) = bandpass_fft(obs.rft2.force(:,ax), Fs, lcutoff, hcutoff);
+        obs.rft2.torque(:,ax) = bandpass_fft(obs.rft2.torque(:,ax), Fs, lcutoff, hcutoff);
     end
 end
 
-% function obs = process_torques(obs)
-%     
-%     rv1 = [ 0.2275, 0, -0.015];
-%     rv2 = [-0.2275, 0, -0.015];
-% 
-%     tcomp1 = cross(obs.rft1.torque, repmat(rv1,[numel(obs.rft1.time_steps), 1]));
-%     tcomp2 = cross(obs.rft2.torque, repmat(rv2,[numel(obs.rft2.time_steps), 1]));
-% 
-% 
-% end
+function obs = process_torques(obs)
+    
+rv1 = [ 0.2275, 0, -0.015];
+rv2 = [-0.2275, 0, -0.015];
+
+tcomp1 = cross(obs.rft1.torque, repmat(rv1,[numel(obs.rft1.time_steps), 1]));
+tcomp2 = cross(obs.rft2.torque, repmat(rv2,[numel(obs.rft2.time_steps), 1]));
+obs.rft1.tcomp = tcomp1;
+obs.rft2.tcomp = tcomp2;
+obs.rft1.ttorque = obs.rft1.torque+tcomp1;
+obs.rft2.ttorque = obs.rft2.torque+tcomp2;
+obs.fsum.ttsum = obs.rft2.torque+tcomp2 + obs.rft1.torque+tcomp1;
+
+end
 
 
 
