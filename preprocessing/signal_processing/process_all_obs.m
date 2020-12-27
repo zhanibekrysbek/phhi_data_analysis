@@ -280,7 +280,7 @@ legend([f1,f2], {'before', 'after'});
 
 ind = 60;
 obs = observations(ind);
-[obs2,~] = process_rft(obs1);
+[obs2,~] = process_rft(obs);
 
 rft_ids = {'C00300119','C00300122'};
 % swap the sensors if variable names and sensor IDs are inconsistent

@@ -53,7 +53,6 @@ switch opt
 %         imuacc_ph = unwrap(imuacc_ph);
         
         
-        
         fs = plot(obs.rft1.time_steps, fsum_ph,'.'); hold on;
         lacc = plot(obs.pose123.time_steps, linacc_ph,'.');
         iacc = plot(obs.imu.time_steps, imuacc_ph,'.');
@@ -72,7 +71,7 @@ switch opt
         grid on; hold off;
         xts = xticks;
         xticks(xts(1):xts(end));
-        ylabel('Magnitude')
+        ylabel('Magnitude in xy-plane')
         
         
         xlabel('time, sec');
@@ -80,7 +79,56 @@ switch opt
         % legend;
         sgtitle(sprintf('%s    %s    %s  Spatial Frame', obs.obs_id, obs.traj_type, obs.motion_type), ...
             'Interpreter','none');
+    
+    case 3
+
+        subplot(5,1,1);
+        plot(obs.rft1.time_steps, obs.fsum.force(:,1)); hold on;
+        plot(obs.imu.time_steps, obs.imu.accel(:,1)); hold off;
+        subtitle('x - axis')
+        ylabel('N | m/s^2');
+        grid on;
+
+        subplot(5,1,2);
+        plot(obs.rft1.time_steps, obs.fsum.force(:,2)); hold on;
+        plot(obs.imu.time_steps, obs.imu.accel(:,2)); hold off;
+        subtitle('y - axis')
+        ylabel('N | m/s^2');
+        grid on;
+
+        subplot(5,1,3);
+        f1 = plot(obs.rft1.time_steps, obs.fsum.force(:,3)); hold on;
+        a1 = plot(obs.imu.time_steps, obs.imu.accel(:,3)); hold off;
+        subtitle('z - axis');
+        ylabel('N | m/s^2');
+        grid on;
         
+        subplot(5,1,4);
+        % Signal Magnitude
+        plot(obs.fsum.time_steps, vecnorm(obs.fsum.force(:,1:2),2,2)); hold on;
+        plot(obs.imu.time_steps, vecnorm(obs.imu.accel(:,1:2),2,2)); hold off;
+        grid on;
+        subtitle('magnitude')
+
+        subplot(5,1,5);
+        % Phase Angles
+        fsum_ph = atan2d(obs.fsum.force(:,2),obs.fsum.force(:,1));
+        imuacc_ph = atan2d(obs.imu.accel(:,2), obs.imu.accel(:,1));
+
+        fs = plot(obs.rft1.time_steps, fsum_ph,'.','MarkerSize',1); hold on;
+        iacc = plot(obs.imu.time_steps, imuacc_ph,'.','MarkerSize',1); hold off;
+        subtitle('Phase in xy-plane')
+
+        hold off; grid on;
+        ylabel('vector angles, deg');
+        xts = xticks;
+        xticks(xts(1):xts(end));
+        
+        hL = legend([f1,a1], {'force', 'accel'}, 'NumColumns', 2);
+        sgtitle(sprintf('IMU Accel & Fsum consistency check. %s    %s    %s  Body Frame', obs.obs_id, obs.traj_type, obs.motion_type), ...
+            'Interpreter','none');
+        set(hL, 'Position',[0.51 0.03 0.01 0.01],'Units','normalized')
+
 end
 
 

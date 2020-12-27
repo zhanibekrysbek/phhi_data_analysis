@@ -96,12 +96,12 @@ for ind=progress(1:numel(observations_processed), 'Title', 'PhasePlot')
 end
 %%
 
-obs = observations_processed(60);
-% figure(1)
-% plot_phase(obs,1);
+obs = observations_processed(1);
+figure(1)
+plot_phase(obs,3);
 % figure(2)
 % plot_rfts(obs,2);
-figure(3)
-plot_imu(obs,1);
+% figure(3)
+% plot_imu(obs,1);
 
 
