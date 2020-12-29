@@ -7,12 +7,12 @@ base_path = '../../data/preprocessed_v2_1';
 observations_processed = adjust_time(observations);
 
 %% Force Plots
-fig_path = '../../data/plots/plots_preprocessed_v2_1/force/';
+fig_path = '../../data/plots/plots_preprocessed_v2_1/force/body/';
 
 figure('visible','off');
 for ind=progress(1:numel(observations_processed),'Title', 'Force Plots')
     obs = observations_processed(ind);
-    plot_rfts(obs,2)
+    plot_rfts(obs,1)
     saveas(gcf, [fig_path, obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'force', '.jpg'])
 end
 
@@ -97,10 +97,10 @@ end
 %%
 
 obs = observations_processed(1);
-figure(1)
-plot_phase(obs,3);
-% figure(2)
-% plot_rfts(obs,2);
+% figure(1)
+% plot_phase(obs,3);
+figure(5)
+plot_rfts(obs,2);
 % figure(3)
 % plot_imu(obs,1);
 
