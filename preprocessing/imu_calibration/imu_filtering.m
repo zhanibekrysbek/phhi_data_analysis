@@ -77,7 +77,7 @@ legend('x','y','z','w')
 figure(21)
 % Position
 subplot(3,2,1)
-plot(obs.pose123.time_steps, position)
+plot(obs.pose123.time_steps, obs.pose123.position)
 subtitle(sprintf('%s Position', obs.pose123.frame_id))
 grid on
 
@@ -149,7 +149,7 @@ for i=1:size(rotmats,3)
 end
 
 orient = rotm2axang(rotmats);
-orient = orient.*sign(orient(:,3));
+% orient = orient.*sign(orient(:,3));
 
 % Plot Filtered Pose
 
