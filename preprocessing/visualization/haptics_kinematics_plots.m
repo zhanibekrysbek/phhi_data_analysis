@@ -84,24 +84,38 @@ end
 %% Phase Plot
 
 
-fig_path = '../../data/plots/plots_preprocessed_v2_1/rft_accel_phase/';
+fig_path = '../../data/plots/plots_preprocessed_v2_1/rft_accel_phase/all_axis/';
 figure('visible','off');
 for ind=progress(1:numel(observations_processed), 'Title', 'PhasePlot')
 
     obs = observations_processed(ind);
 
-    plot_phase(obs,1)
+    plot_phase(obs,3)
     saveas(gcf, [fig_path, obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'kinematics', '.jpg'])
 
 end
+
+%% IMU Plot
+
+fig_path = '../../data/plots/plots_preprocessed_v2_1/imu/';
+figure('visible','off');
+for ind=progress(1:numel(observations_processed), 'Title', 'IMUplot')
+
+    obs = observations_processed(ind);
+
+    plot_imu(obs,1)
+    saveas(gcf, [fig_path, obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'kinematics', '.jpg'])
+
+end
+
 %%
 
-obs = observations_processed(1);
+obs = observations_processed(2);
 % figure(1)
-% plot_phase(obs,3);
+% plot_phase(obs,1);
 figure(5)
 plot_rfts(obs,2);
-% figure(3)
-% plot_imu(obs,1);
+figure(3)
+plot_imu(obs,1);
 
 

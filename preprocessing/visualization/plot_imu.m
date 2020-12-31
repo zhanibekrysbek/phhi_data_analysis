@@ -24,6 +24,10 @@ switch opt
         xlabel('time, sec')
         ylabel('\mu T');
         grid on;
+        hL = legend({'x', 'y', 'z'},'Location','southwest','NumColumns',3);
+
+        set(hL, 'Position',[0.2 0.03 0.01 0.01],'Units','normalized')
+        
         
 end
 

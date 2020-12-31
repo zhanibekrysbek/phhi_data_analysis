@@ -7,8 +7,6 @@ function [obs] = process_imu(obs,tf)
 %     accel = [obs.imu.accel(1,:); obs.imu.accel; position(end,:)];
 %     orientation = [orientation(1,:);orientation; orientation(end,:)];
     
-    obs = calibrate_mag(obs);
-    
     % Temporal alignment to nominal time. This increases the sampling frequency
     % from 76.3Hz to 100Hz
     method = 'pchip';
@@ -18,7 +16,9 @@ function [obs] = process_imu(obs,tf)
     obs.imu.time_steps = tnom;
     
     % Apply Low Pass filter
-    obs = lowpass_imu(obs);
+    obs = bandpass_imu(obs);
+    
+    obs = calibrate_mag(obs);
     
     % Transform to Spatial frame
     obs = to_spatial_frame(obs);
@@ -26,10 +26,10 @@ function [obs] = process_imu(obs,tf)
 end
 
 
-function obs = lowpass_imu(obs)
+function obs = bandpass_imu(obs)
 
 Fs=100;
-lcutoff = 0.05;
+lcutoff = 0.0;
 hcutoff = 12.5;
 
 for ax = 1:3
@@ -65,14 +65,22 @@ end
 
 
 function obs = calibrate_mag(obs)
-A = [
-    0.9249    0.0957   -0.0063;
-    0.0957    1.0708   -0.0565;
-   -0.0063   -0.0565    1.0221];
-b = [0.0377    0.1454   -0.0653];
+% A = [
+%     0.9249    0.0957   -0.0063;
+%     0.0957    1.0708   -0.0565;
+%    -0.0063   -0.0565    1.0221];
+% b = [0.0377    0.1454   -0.0653];
 % expmfs = 0.4166;
 
-% Calibrate and conver from gauss to micro Tesla
+A = [
+    0.9249   -0.0956    0.0063;
+   -0.0956    1.0706   -0.0566;
+    0.0063   -0.0566    1.0223];
+
+b = [0.0377   -0.1454    0.0653];
+% expmfs = 0.4167;
+
+% Calibrate and convert from gauss to micro Tesla
 obs.imu.mag = (obs.imu.mag - b)*A*100;
 
 end
