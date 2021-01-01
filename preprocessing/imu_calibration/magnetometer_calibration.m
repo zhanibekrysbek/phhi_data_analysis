@@ -54,8 +54,7 @@ subplot(326);
 plot(ld_orig.t,ld_orig.accel(:,3)); grid on;
 
 
-%%
-
+%% 3D plot
 
 t = ld.t;
 t = t-t(1);

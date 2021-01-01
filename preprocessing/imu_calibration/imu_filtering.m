@@ -7,12 +7,15 @@ observations_processed = adjust_time(observations);
 %%
 obs = observations_processed(1);
 
-
 aruco_rotm = axang2rotm(obs.pose123.orientation);
 % grfA frame seen from NED frame
-gNA = [-1  0  0; 
-        0  1  0;
-        0  0 -1];
+gA_NED = [-1  0  0; 
+           0  1  0;
+           0  0 -1];
+    
+gB_NED = [ 1  0  0; 
+           0 -1  0;
+           0  0 -1];
 
 %% Plot all sensor data
 
@@ -112,9 +115,8 @@ sgtitle('Position and IMU')
 % 1 Gs, G = 0.0001 T
 accel = obs.imu.accel;
 gyro = obs.imu.gyro/180*pi;
-mag = obs.imu.mag * 100 ; % convert from gauss to micro Tesla. Mag is pre calibrated
+mag = obs.imu.mag; % convert from gauss to micro Tesla. Mag is pre calibrated
 timu = obs.imu.time_steps;
-fs = 1/mean(diff(timu));
 
 % Rned2wall = [-0.0006   -1.0000    0.0062;
 %               0.9998   -0.0005    0.0174;
@@ -138,14 +140,14 @@ filt = ahrsfilter('ReferenceFrame', 'NED','OrientationFormat','Rotation matrix')
 %                   'ExpectedMagneticFieobsStrength',expmfs);%, ...
 %                   'AccelerometerNoise', 0.01,...
 %                   'MagnetometerNoise', 1);
-filt.SampleRate = fs;
+filt.SampleRate = 100;
 % Outputs the orientation of Tray wrt NED
 [rotmats,angvel] = filt(accel, gyro, mag);
 
 
 % Convert from NED to grfA frame
 for i=1:size(rotmats,3)
-    rotmats(:,:,i) = gNA*rotmats(:,:,i);
+    rotmats(:,:,i) = gA_NED*rotmats(:,:,i);
 end
 
 orient = rotm2axang(rotmats);

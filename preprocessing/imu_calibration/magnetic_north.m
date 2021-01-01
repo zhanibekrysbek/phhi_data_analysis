@@ -36,7 +36,7 @@ for ax = 1:3
     ld.gyro(:,ax) = bandpass_fft(ld.gyro(:,ax), Fs, lcutoff, hcutoff);
 end
 
-%%
+%% Calibrate and Adjust the units
 
 % 1 Gs, G = 0.0001 T
 accel = ld.accel;
@@ -46,15 +46,14 @@ gyro = gyro - gyro_mean;
 mag = ld.mag; % convert from gauss to micro Tesla
 t = ld.t;
 t = t - t(1);
-fs = 1/mean(diff(t));
 
 expmfs = 0.4167 * 100;
 mag = (mag - b)*A * 100; % Calibrate Mag
 
 % gyro = lowpass(gyro, 5, fs);
-gNA = [-1  0  0; 
-        0  1  0;
-        0  0 -1];
+gTray_NED = [  0 -1  0; 
+           -1  0  0;
+            0  0 -1];
 
 % gyro = gyro - mean(gyro); % Calibrate Gyro
 
@@ -149,7 +148,7 @@ filt.SampleRate = 100;
 
 % Convert NED to grfA frame
 for i=1:size(rotmats,3)
-    rotmats(:,:,i) = gNA'*rotmats(:,:,i);
+    rotmats(:,:,i) = gTray_NED*rotmats(:,:,i);
 end
 orient = rotm2axang(rotmats);
 % orient(:,4) = orient(:,4)/pi*180;
