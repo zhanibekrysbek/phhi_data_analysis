@@ -5,17 +5,28 @@ base_path = '../../data/preprocessed_v2_1';
 observations_processed = adjust_time(observations);
 
 %%
-obs = observations_processed(1);
+ind = 104;
+obs = observations_processed(ind);
 
 aruco_rotm = axang2rotm(obs.pose123.orientation);
+
+obs_id_num = split(obs.obs_id,'_');
+obs_id_num = str2double(obs_id_num{end});
+
 % grfA frame seen from NED frame
 gA_NED = [-1  0  0; 
            0  1  0;
            0  0 -1];
-    
+% grfB frame seen from NED frame       
 gB_NED = [ 1  0  0; 
            0 -1  0;
            0  0 -1];
+
+if mod(obs_id_num,2)==1
+    gS_NED = gA_NED;
+elseif mod(obs_id_num,2)==0
+    gS_NED = gB_NED;
+end
 
 %% Plot all sensor data
 
@@ -118,21 +129,6 @@ gyro = obs.imu.gyro/180*pi;
 mag = obs.imu.mag; % convert from gauss to micro Tesla. Mag is pre calibrated
 timu = obs.imu.time_steps;
 
-% Rned2wall = [-0.0006   -1.0000    0.0062;
-%               0.9998   -0.0005    0.0174;
-%              -0.0174    0.0062    0.9998];
-%          
-
-% bring back from tray coordinates to sensor coordinates
-% accel(:,2) = -accel(:,2);
-% accel(:,3) = -accel(:,3);
-% 
-% gyro(:,2) = -gyro(:,2);
-% gyro(:,3) = -gyro(:,3);
-% 
-% mag(:,2) = -mag(:,2);
-% mag(:,3) = -mag(:,3);
-
 
 expmfs = 0.4166 * 100;
 
@@ -147,11 +143,11 @@ filt.SampleRate = 100;
 
 % Convert from NED to grfA frame
 for i=1:size(rotmats,3)
-    rotmats(:,:,i) = gA_NED*rotmats(:,:,i);
+    rotmats(:,:,i) = gS_NED*rotmats(:,:,i);
 end
 
 orient = rotm2axang(rotmats);
-% orient = orient.*sign(orient(:,3));
+orient = orient.*sign(orient(:,3));
 
 % Plot Filtered Pose
 
@@ -180,6 +176,29 @@ subtitle(sprintf('%s Orientation', 'KF'))
 grid on
 legend('x','y','z','angle')
 sgtitle('Aruco vs Kalman Filter')
+
+
+%% Difference with the ARUCO Orientation
+
+diff_orient = zeros(size(orient));
+
+for i=1:size(rotmats,3)
+    diff_orient(i,:) = rotm2axang(aruco_rotm(:,:,i)'*rotmats(:,:,i));
+end
+
+diff_orient = diff_orient.*sign(diff_orient(:,3));
+
+figure(32);
+subplot(211)
+plot(obs.pose123.time_steps, diff_orient(:,1:3))
+legend('x','y','z')
+grid on;
+
+subplot(212)
+plot(obs.pose123.time_steps, rad2deg(diff_orient(:,4)))
+legend('angle')
+grid on;
+ylabel('degree')
 
 
 %% Double Integrate
