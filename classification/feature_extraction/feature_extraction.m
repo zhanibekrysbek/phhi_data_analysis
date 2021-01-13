@@ -6,13 +6,29 @@ base_path = '../../data/preprocessed_v2_1';
 observations_processed = adjust_time(observations_processed);
 
 
-%% Choose time interval
+%% Compute the features
 
-obs = observations_processed(2);
+% obs = observations_processed(2);
+% 
+% figure(1);
+% plot_rfts(obs, 2);
 
-figure(1);
-plot_rfts(obs, 2);
+ax = [1,2];
 
+features(numel(observations_processed)) = struct('haptics',[], 'motion_type',[],...
+            'obs_id',[], 'traj_type', []);
+% profile on;
+for i=progress(1:numel(features), 'Title','FeatureExtraction')
+    
+    obs = observations_processed(i);
+    features(i).obs_id = obs.obs_id;
+    features(i).traj_type = obs.traj_type;
+    features(i).motion_type = obs.motion_type;
+    
+    features(i) = haptic_features(features(i), obs);
+     
+end
+% profile viewer;
 
 %% Indices
 
@@ -149,6 +165,7 @@ sgtitle('Haptic Features')
 figure(2);
 plot_rfts(obs,2)
 
+
 %% Haptics Based features TORQUES
 
 dotsv = @(f1,f2) f1(:,1).*f2(:,1) + f1(:,2).*f2(:,2);
@@ -200,3 +217,40 @@ sgtitle('Haptic Features')
 
 % figure(2);
 % plot_rfts(obs,2)
+
+
+%% Sliding Window
+
+feat = features(2);
+
+numfeat = numel(fieldnames(features(1).haptics));
+Z = zeros(numel(features), numfeat);
+Y = zeros(numel(features),1);
+
+t0 = 0.0;
+tf = 2.0;
+for i=progress(1:numel(features), 'Title','FeatureExtraction')
+    obs = observations_processed(i);
+    t0 = 0.0;
+    tf = 0.6*obs.pose123.time_steps(end);
+    [Z(i,1:end-1),Y(i)] = integrate_features(features(i),t0,tf);
+    ind_p = obs.pose123.time_steps<=tf;
+    yf = max(obs.pose123.position(ind_p,2));
+    Z(i,end) = yf;
+end
+
+%% PCA and Plot
+
+[Z1, W, lambda] = LDA(Z,Y);
+
+figure(1);
+plot3(Z1(Y==0,1),Z1(Y==0,2),Z1(Y==0,3), 'o'); hold on;
+plot3(Z1(Y==1,1),Z1(Y==1,2),Z1(Y==1,3), 'x'); hold off; grid on;
+
+
+
+%% 
+figure(3);
+plot(Z(Y==0,end),'o'); hold on;
+plot(Z(Y==1,end), 'x'); hold off;
+
