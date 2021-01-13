@@ -31,6 +31,7 @@ for ind = progress(1:numel(observations_processed), 'Title', 'Adjusting Time')
     
     observations_processed(ind) = shift_time(obs, offset0, offset1);
 end
+
 end
 
 

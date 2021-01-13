@@ -10,9 +10,6 @@ base_path = '../../data/preprocessed_v1_1';
 
 %% Preprocess RFT and Pose
 
-% Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',cutoff, ...
-%        'DesignMethod','window','Window',{@kaiser,3},'SampleRate',rftFS);
-   
 rft_ids = {'C00300119','C00300122'};
 observations_processed(numel(observations)) = struct('pose123',[], 'motion_type',[],...
             'obs_id',[], 'imu',[], 'traj_type', [], 'rft1',[], 'rft2',[], 'fsum',[], 'fstretch',[]);
@@ -26,6 +23,8 @@ for i=progress(1:numel(observations_processed), 'Title','Preprocessing')
     observations_processed(i) = process_pose(observations_processed(i),tf);
     
     observations_processed(i) = process_imu(observations_processed(i),tf);
+    
+    observations_processed(i) = get_fsum(observations_processed(i));
     
 %     observations_processed(i) = obs;
 end

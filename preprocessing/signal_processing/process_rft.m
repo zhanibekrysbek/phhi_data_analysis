@@ -22,10 +22,12 @@ function [obs,tf] = process_rft(obs)
     obs.rft1.force = interp1(obs.rft1.time_steps, obs.rft1.force, tnom, method);
     obs.rft1.torque= interp1(obs.rft1.time_steps, obs.rft1.torque, tnom, method);
     obs.rft1.time_steps = tnom;
+    obs.rft1.tnorm = tnom/tnom(end);
     
     obs.rft2.force = interp1(obs.rft2.time_steps, obs.rft2.force, tnom, method);
     obs.rft2.torque= interp1(obs.rft2.time_steps, obs.rft2.torque, tnom, method);
     obs.rft2.time_steps = tnom;
+    obs.rft2.tnorm = tnom/tnom(end);
     
     % Low pass filter
 %     obs.rft1.force = filter(Hd, obs.rft1.force);

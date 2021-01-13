@@ -14,6 +14,7 @@ function [obs] = process_imu(obs,tf)
     obs.imu.gyro = interp1(obs.imu.time_steps,obs.imu.gyro, tnom, method);
     obs.imu.mag = interp1(obs.imu.time_steps,obs.imu.mag, tnom, method);
     obs.imu.time_steps = tnom;
+    obs.imu.tnorm = tnom/tnom(end);
     
     % Apply Low Pass filter
     obs = bandpass_imu(obs);
