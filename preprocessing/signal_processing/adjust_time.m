@@ -46,51 +46,80 @@ function obs = shift_time(obs, offset0, offset1)
 
     obs.rft1.time_steps = obs.rft1.time_steps(I) - t0;
     obs.rft1.time_steps = obs.rft1.time_steps - obs.rft1.time_steps(1);
-    obs.rft1.force = obs.rft1.force(I,:);
-    obs.rft1.forceS = obs.rft1.forceS(I,:);
-    obs.rft1.torque = obs.rft1.torque(I,:);
-    obs.rft1.torqueS = obs.rft1.torqueS(I,:);
+    obs.rft1.tnorm = obs.rft1.time_steps/obs.rft1.time_steps(end);
+%     obs.rft1.force = obs.rft1.force(I,:);
+%     obs.rft1.forceS = obs.rft1.forceS(I,:);
+%     obs.rft1.torque = obs.rft1.torque(I,:);
+%     obs.rft1.torqueS = obs.rft1.torqueS(I,:);
+    obs.rft1 = apply_mask(obs.rft1,I);
+
+    
 
     obs.rft2.time_steps = obs.rft2.time_steps(I) - t0;
     obs.rft2.time_steps = obs.rft2.time_steps - obs.rft2.time_steps(1);
-    obs.rft2.force = obs.rft2.force(I,:);
-    obs.rft2.forceS = obs.rft2.forceS(I,:);
-    obs.rft2.torque = obs.rft2.torque(I,:);
-    obs.rft2.torqueS = obs.rft2.torqueS(I,:);
+    obs.rft2.tnorm = obs.rft2.time_steps/obs.rft2.time_steps(end);
+%     obs.rft2.force = obs.rft2.force(I,:);
+%     obs.rft2.forceS = obs.rft2.forceS(I,:);
+%     obs.rft2.torque = obs.rft2.torque(I,:);
+%     obs.rft2.torqueS = obs.rft2.torqueS(I,:);
+    obs.rft2 = apply_mask(obs.rft2,I);
+
 
     obs.fsum.time_steps = obs.fsum.time_steps(I) - t0;
     obs.fsum.time_steps = obs.fsum.time_steps - obs.fsum.time_steps(1);
-    obs.fsum.force = obs.fsum.force(I,:);
-    obs.fsum.forceS = obs.fsum.forceS(I,:);
+    obs.fsum.tnorm = obs.fsum.time_steps/obs.fsum.time_steps(end);
+%     obs.fsum.force = obs.fsum.force(I,:);
+%     obs.fsum.forceS = obs.fsum.forceS(I,:);
+    obs.fsum = apply_mask(obs.fsum,I);
+
 
     obs.fstretch.time_steps = obs.fstretch.time_steps(I) - t0;
     obs.fstretch.time_steps = obs.fstretch.time_steps - obs.fstretch.time_steps(1);
-    obs.fstretch.force = obs.fstretch.force(I,:);
-    obs.fstretch.forceS = obs.fstretch.forceS(I,:);
+    obs.fstretch.tnorm = obs.fstretch.time_steps/obs.fstretch.time_steps(end);
+%     obs.fstretch.force = obs.fstretch.force(I,:);
+%     obs.fstretch.forceS = obs.fstretch.forceS(I,:);
+    obs.fstretch = apply_mask(obs.fstretch,I);
 
     % Pose
     I = obs.pose123.time_steps >= t0 & obs.pose123.time_steps <= tf;
 
     obs.pose123.time_steps = obs.pose123.time_steps(I) - t0;
     obs.pose123.time_steps = obs.pose123.time_steps - obs.pose123.time_steps(1);
-    obs.pose123.position = obs.pose123.position(I,:);
-    obs.pose123.orientation = obs.pose123.orientation(I,:);
-    obs.pose123.linvel = obs.pose123.linvel(I,:);
-    obs.pose123.linvelB = obs.pose123.linvelB(I,:);
-    obs.pose123.linacc = obs.pose123.linacc(I,:);
-    obs.pose123.linaccB = obs.pose123.linaccB(I,:);
+    obs.pose123.tnorm = obs.pose123.time_steps/obs.pose123.time_steps(end);
+%     obs.pose123.position = obs.pose123.position(I,:);
+%     obs.pose123.orientation = obs.pose123.orientation(I,:);
+%     obs.pose123.linvel = obs.pose123.linvel(I,:);
+%     obs.pose123.linvelB = obs.pose123.linvelB(I,:);
+%     obs.pose123.linacc = obs.pose123.linacc(I,:);
+%     obs.pose123.linaccB = obs.pose123.linaccB(I,:);
+    obs.pose123 = apply_mask(obs.pose123,I);
+
 
     % IMU
     I = obs.imu.time_steps >= t0 & obs.imu.time_steps <= tf;
     
     obs.imu.time_steps = obs.imu.time_steps(I) - t0;
     obs.imu.time_steps = obs.imu.time_steps - obs.imu.time_steps(1);
-    obs.imu.accel = obs.imu.accel(I,:);
-    obs.imu.gyro = obs.imu.gyro(I,:);
-    obs.imu.mag = obs.imu.mag(I,:);
-    obs.imu.accelS = obs.imu.accelS(I,:);
-    obs.imu.gyroS = obs.imu.gyroS(I,:);
-    obs.imu.magS = obs.imu.magS(I,:);
+    obs.imu.tnorm = obs.imu.time_steps/obs.imu.time_steps(end);
+%     obs.imu.accel = obs.imu.accel(I,:);
+%     obs.imu.gyro = obs.imu.gyro(I,:);
+%     obs.imu.mag = obs.imu.mag(I,:);
+%     obs.imu.accelS = obs.imu.accelS(I,:);
+%     obs.imu.gyroS = obs.imu.gyroS(I,:);
+%     obs.imu.magS = obs.imu.magS(I,:);
+    obs.imu = apply_mask(obs.imu,I);
+end
+
+
+function res = apply_mask(res,I)
+    fn = fields(res);
+    
+    for i = 1:numel(fn)
+        if ~strcmp('time_steps', fn{i}) && ~strcmp('tnorm', fn{i}) && ~strcmp('frame_id', fn{i})
+            res.(fn{i}) = res.(fn{i})(I,:);
+        end
+    end
+    
 end
 
 

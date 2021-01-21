@@ -23,18 +23,19 @@ end
 
 function obs = get_torque(obs)
 
-    rv1 = [ 0.2275, 0, -0.015];
-    rv2 = [-0.2275, 0, -0.015];
-
-    tcomp1 = cross(obs.rft1.torque, repmat(rv1,[length(obs.rft1.time_steps), 1]));
-    tcomp2 = cross(obs.rft2.torque, repmat(rv2,[length(obs.rft2.time_steps), 1]));
+%     Already called in process_rft.m
+%     rv1 = [ 0.2275, 0, -0.015];
+%     rv2 = [-0.2275, 0, -0.015];
+% 
+%     tcomp1 = cross(obs.rft1.torque, repmat(rv1,[length(obs.rft1.time_steps), 1]));
+%     tcomp2 = cross(obs.rft2.torque, repmat(rv2,[length(obs.rft2.time_steps), 1]));
+%     
+%     obs.rft1.tcomp = tcomp1;
+%     obs.rft2.tcomp = tcomp2;
+%     obs.rft1.ttorque = obs.rft1.torque+tcomp1;
+%     obs.rft2.ttorque = obs.rft2.torque+tcomp2;
     
-    obs.rft1.tcomp = tcomp1;
-    obs.rft2.tcomp = tcomp2;
-    obs.rft1.ttorque = obs.rft1.torque+tcomp1;
-    obs.rft2.ttorque = obs.rft2.torque+tcomp2;
-    
-    obs.fsum.ttsum = obs.rft2.torque + tcomp2 + obs.rft1.torque + tcomp1;
+    obs.fsum.ttsum = obs.rft2.torque + obs.rft2.tcomp + obs.rft1.torque + obs.rft1.tcomp;
 
 end
 
