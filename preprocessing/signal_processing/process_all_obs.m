@@ -10,11 +10,11 @@ base_path = '../../data/preprocessed_v1_1';
 
 %% Preprocess RFT and Pose
 
-rft_ids = {'C00300119','C00300122'};
-observations_processed(numel(observations)) = struct('pose123',[], 'motion_type',[],...
+obsNum = numel(observations);
+observations_processed(obsNum) = struct('pose123',[], 'motion_type',[],...
             'obs_id',[], 'imu',[], 'traj_type', [], 'rft1',[], 'rft2',[], 'fsum',[], 'fstretch',[]);
-profile on;
-for i=progress(1:numel(observations_processed), 'Title','Preprocessing')
+% profile on;
+for i=progress(1:obsNum)%numel(observations_processed), 'Title','Preprocessing')
     
     [observations_processed(i),tf] = process_rft(observations(i));
      
@@ -30,54 +30,17 @@ for i=progress(1:numel(observations_processed), 'Title','Preprocessing')
 end
 % profile viewer;
 
-%% Low pass filtering using fft and ifft
-
-obs = observations(112);
-x = obs.imu.accel(:,3);
-hcutoff = 12.5;
-lcutoff = 0.05;
-
-Fs = 100;
-
-y = fft(x);     
-f = (0:length(y)-1)*Fs/length(y);
-
-n = length(x);                         
-fshift = (-n/2:n/2-1)*(Fs/n);
-yshift = fftshift(y);
-I = (fshift<=hcutoff & fshift>=lcutoff) | (fshift>=-hcutoff & fshift<=-lcutoff);
-
-yshift(~I) = 0;
-
-figure(1);
-plot(fshift,abs(yshift))
-title('Magnitude')
-
-ynew = ifftshift(yshift);
-xnew = ifft(ynew);
+%% Run IMU orientation tracking
 
 
-
-figure(2);
-subplot(2,1,1);
-plot(x);%hold on;
-grid on;
-% plot(real(xnew)); hold off
-yl = ylim;
-subplot(2,1,2);
-plot(real(xnew));hold off;
-grid on;
-ylim(yl)
-
-legend('original', 'filtered')
-
+observations_imufilt = imu_orient_tracking(observations_processed);
 
 
 %% Save the data 1 by 1. GitHub has a strict limit to file size 100MB
 base_path = '../../data/preprocessed_v2_1/';
 
-for i=progress(1:numel(observations_processed), 'Title', 'Saving the data')
-    obs = observations_processed(i);
+for i=progress(1:numel(observations_imufilt), 'Title', 'Saving the data')
+    obs = observations_imufilt(i);
     save([base_path obs.obs_id '.mat'], '-struct','obs');
 end
 
@@ -263,4 +226,45 @@ figure(21);
     iaccm = plot(obs.imu.time_steps, vecnorm(obs.imu.accel(:,1:2),2,2)); hold off;
     grid on;
 
+    
+    
+%% Orientation Tracking
+obs = observations_processed(1);
+% tic;
+[orient, angvel] = imu_orient_tracking(obs);
+% toc
+
+
+%%
+        figure(1);
+
+        % Position
+        set(gcf,'Position',[1024 768 1024 768])
+        
+        subplot(2,2,1)
+        plot(obs.pose123.time_steps, obs.pose123.position)
+        subtitle(sprintf('%s Position', 'Aruco'))
+        grid on
+
+        subplot(2,2,2)
+        plot(obs.pose123.time_steps, obs.pose123.orientation) %, ...
+%              obs_raw.pose123.time_steps, obs_raw.pose123.orientation,'.', ...
+%              'Markersize',1);
+        subtitle(sprintf('%s Orientation', 'Aruco'))
+        grid on
+        yt = yticks;
+        yts = yt(1):0.5:yt(end);
+        yticks(yts);
+
+        subplot(2,2,3)
+        plot(timu, angvel)
+        subtitle(sprintf('%s Angular Velocty', 'KF'))
+        grid on
+
+        subplot(2,2,4)
+        plot(timu, orient)
+        subtitle(sprintf('%s Orientation', 'KF'))
+        grid on
+        yticks(yts);
+        
 

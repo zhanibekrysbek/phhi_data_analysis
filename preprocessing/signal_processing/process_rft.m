@@ -7,9 +7,6 @@ function [obs,tf] = process_rft(obs)
     lcutoff = 0;
     hcutoff = 12.5;
     method = 'pchip';
-    % Low pass filter
-%     Hd = designfilt('lowpassfir','FilterOrder',100,'CutoffFrequency',cutoff, ...
-%            'DesignMethod','window','Window',{@kaiser,3},'SampleRate',rftFS);
 
     rft_ids = {'C00300119','C00300122'};
     
@@ -30,12 +27,6 @@ function [obs,tf] = process_rft(obs)
     obs.rft2.tnorm = tnom/tnom(end);
     
     % Low pass filter
-%     obs.rft1.force = filter(Hd, obs.rft1.force);
-%     obs.rft1.torque = filter(Hd, obs.rft1.torque);
-%     
-%     obs.rft2.force = filter(Hd, obs.rft2.force);
-%     obs.rft2.torque = filter(Hd, obs.rft2.torque);
-
     obs = lowpass_rft(obs, rftFS, lcutoff, hcutoff);
     
     
@@ -66,6 +57,7 @@ function obs = lowpass_rft(obs,Fs, lcutoff, hcutoff)
     end
 end
 
+
 function obs = process_torques(obs)
     
 rv1 = [ 0.2275, 0, -0.015];
@@ -73,10 +65,12 @@ rv2 = [-0.2275, 0, -0.015];
 
 tcomp1 = cross(obs.rft1.torque, repmat(rv1,[numel(obs.rft1.time_steps), 1]));
 tcomp2 = cross(obs.rft2.torque, repmat(rv2,[numel(obs.rft2.time_steps), 1]));
+
 obs.rft1.tcomp = tcomp1;
 obs.rft2.tcomp = tcomp2;
 obs.rft1.ttorque = obs.rft1.torque+tcomp1;
 obs.rft2.ttorque = obs.rft2.torque+tcomp2;
+
 obs.fsum.ttsum = obs.rft2.torque+tcomp2 + obs.rft1.torque+tcomp1;
 
 end

@@ -3,8 +3,8 @@
 % clc;clear;
 base_path = '../../data/preprocessed_v2_1';
 
-[observations,tb] = load_data(base_path);
-observations_processed = adjust_time(observations);
+[observations_processed,tb] = load_data(base_path);
+% observations_processed = adjust_time(observations);
 
 %% Force Plots
 fig_path = '../../data/plots/plots_preprocessed_v2_1/force/body/';
@@ -108,14 +108,51 @@ for ind=progress(1:numel(observations_processed), 'Title', 'IMUplot')
 
 end
 
+%% IMU and ARUCO Orientation Comparison plot
+fig_path = '../../data/plots/plots_preprocessed_v2_1/orient_tracking/';
+figure('visible','off');
+for ind=progress(1:numel(observations_processed), 'Title', 'OrientTracking_plot')
+
+    obs = observations_processed(ind);
+
+    plot_imu(obs, 2)
+    saveas(gcf, [fig_path, obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'kinematics', '.jpg'])
+
+end
+figure('visible','on');
+
 %%
 
-obs = observations_processed(2);
+obs = observations_processed(20);
+
 % figure(1)
 % plot_phase(obs,1);
-figure(5)
-plot_rfts(obs,2);
-figure(3)
-plot_imu(obs,1);
+% figure(5)
+% plot_rfts(obs,2);
+% figure(3)
+% plot_imu(obs,1);
+
+figure(4);
+plot_imu(obs,2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
