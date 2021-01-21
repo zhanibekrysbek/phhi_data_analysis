@@ -3,7 +3,7 @@ clc;clear;
 base_path = '../../data/preprocessed_v2_1';
 
 [observations_processed,tb] = load_data(base_path);
-observations_processed = adjust_time(observations_processed);
+% observations_processed = adjust_time(observations_processed);
 
 
 %% Compute the features
@@ -57,9 +57,6 @@ subplot(224);
 plot(obs.rft2.time_steps(If), obs.rft2.force(If,:));
 grid on;
 
-
-
-
 %% Computed Torque
 
 obs = observations_processed(2);
@@ -110,8 +107,6 @@ subtitle('\tau_{stretch}'); grid on;
 
 hL = legend('x','y','z','NumColumns',3);
 set(hL, 'Position',[0.51 0.03 0.01 0.01],'Units','normalized')
-
-
 
 %% Haptics Based features FORCES
 
@@ -165,7 +160,6 @@ sgtitle('Haptic Features')
 figure(2);
 plot_rfts(obs,2)
 
-
 %% Haptics Based features TORQUES
 
 dotsv = @(f1,f2) f1(:,1).*f2(:,1) + f1(:,2).*f2(:,2);
@@ -218,8 +212,7 @@ sgtitle('Haptic Features')
 % figure(2);
 % plot_rfts(obs,2)
 
-
-%% Sliding Window
+%% Sliding Window with Integration
 
 feat = features(2);
 
@@ -248,9 +241,41 @@ plot3(Z1(Y==0,1),Z1(Y==0,2),Z1(Y==0,3), 'o'); hold on;
 plot3(Z1(Y==1,1),Z1(Y==1,2),Z1(Y==1,3), 'x'); hold off; grid on;
 
 
+%% Sliding Window
 
-%% 
-figure(3);
-plot(Z(Y==0,end),'o'); hold on;
-plot(Z(Y==1,end), 'x'); hold off;
+
+wind_size = 0.05;
+stride = 0.02;
+divisions = 5;
+
+t0 = 0;
+Nwinds = ceil((1 - wind_size)/stride);
+
+X = zeros(Nwinds*numel(observations_processed), divisions*25);
+
+for ind=progress(1:numel(observations_processed))
+    obs = observations_processed(ind);
+    X((ind-1)*Nwinds+1:ind*Nwinds,:) = sliding_window(obs, wind_size, stride, divisions);
+end
+
+%% Debugging Sliding Window
+obs = observations_processed(2);
+
+wind_size = 0.05;
+stride = 0.02;
+divisions = 5;
+
+
+X = sliding_window(obs, wind_size, stride, divisions);
+
+
+
+
+
+
+
+
+
+
+
 
