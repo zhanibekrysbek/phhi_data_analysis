@@ -251,7 +251,7 @@ divisions = 5;
 t0 = 0;
 Nwinds = ceil((1 - wind_size)/stride);
 
-X = zeros(Nwinds*numel(observations_processed), divisions*25);
+X = zeros(Nwinds*numel(observations_processed), divisions*28);
 
 for ind=progress(1:numel(observations_processed))
     obs = observations_processed(ind);

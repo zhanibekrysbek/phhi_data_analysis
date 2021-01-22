@@ -10,7 +10,7 @@ function [X] = sliding_window(obs, wind_size, stride, divisions)
 t0 = 0;
 Nwinds = ceil((1 - wind_size)/stride);
 
-X = zeros(Nwinds, divisions*25);
+X = zeros(Nwinds, divisions*28);
 
 for ind = 1:Nwinds
     tf = t0 + wind_size;
@@ -19,18 +19,23 @@ for ind = 1:Nwinds
     Ipos = obs.pose123.tnorm <= tf & obs.pose123.tnorm >= t0;
     Iimu = obs.imu.tnorm <= tf & obs.imu.tnorm >= t0;
     
-    
+    % Force Torque
     f1 = obs.rft1.force(Irft,:);
     f2 = obs.rft2.force(Irft,:);
     tor1 = obs.rft1.torque(Irft,:);
     tor2 = obs.rft2.torque(Irft,:);
     
+    % Pose
     pos = obs.pose123.position(Ipos,:);
-    orient = obs.pose123.orientation(Ipos,:);
+    orient = obs.imu.orientation(Ipos,:);
     
-    accel = obs.imu.accel(Iimu,:);
-    gyro = obs.imu.gyro(Iimu,:);
-    
+    % Linear Acceleration
+    accel = obs.imu.pureAccel(Iimu,:);
+%     gyro = obs.imu.gyro(Iimu,:);
+
+    % Twist
+    tw = obs.pose123.twist(Ipos);
+
     
     f1_v = extract_means(f1,divisions);
     f2_v = extract_means(f2,divisions);
@@ -41,10 +46,12 @@ for ind = 1:Nwinds
     orient_v = extract_means(orient , divisions);
     
     accel_v = extract_means(accel, divisions);
-    gyro_v = extract_means(gyro, divisions);
+%     gyro_v = extract_means(gyro, divisions);
+
+    tw_v = extract_means(tw, divisions);
     
     
-    X(ind,:) = [f1_v tor1_v f2_v tor2_v pos_v orient_v accel_v gyro_v];
+    X(ind,:) = [f1_v tor1_v f2_v tor2_v pos_v orient_v accel_v tw_v];
     
     
 %     fprintf("%d %f\n",ind, t0);

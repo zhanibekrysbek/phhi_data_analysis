@@ -74,5 +74,51 @@ function obs = track_orientation(obs)
     obs.imu.orientation = orient;
     obs.imu.angvel = angvel;
     
+    obs = remove_gravity(obs);
+    obs = spatial_angvel(obs);
+    obs = compute_twist(obs);
+    
 end
+
+
+function obs = compute_twist(obs)
+twist = zeros([numel(obs.pose123.time_steps),6]);
+twist(:,4:6) = obs.imu.angvelS;
+
+for i = 1:numel(obs.pose123.time_steps)
+    twist(i,1:3) = cross(obs.pose123.position(i,:)', obs.imu.angvelS(i,:)')' + obs.pose123.linvel(i,:);
+end
+obs.pose123.twist = twist;
+
+end
+
+
+function obs = remove_gravity(obs)
+
+gS = [0;0;-9.81];
+
+rotmats = axang2rotm(obs.imu.orientation);
+gB = zeros(size(obs.imu.accel));
+for i = 1:size(rotmats,3)
+    gB(i,:) = gS'*rotmats(:,:,i);
+end
+
+obs.imu.pureAccel = obs.imu.accel - gB;
+
+end
+
+
+function obs = spatial_angvel(obs)
+
+angvelS = zeros(size(obs.imu.angvel));  
+rotmats = axang2rotm(obs.imu.orientation);
+
+for i = 1:size(rotmats,3)
+    angvelS(i,:) = obs.imu.angvel(i,:)*rotmats(:,:,i)';
+end  
+
+obs.imu.angvelS = angvelS;
+    
+end
+
 
