@@ -32,7 +32,7 @@ function obs = bandpass_imu(obs)
 
 Fs=100;
 lcutoff = 0.0;
-hcutoff = 20.0;
+hcutoff = 15.0;
 
 for ax = 1:3
     obs.imu.accel(:,ax) = bandpass_fft(obs.imu.accel(:,ax), Fs, lcutoff, hcutoff);
