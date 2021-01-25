@@ -12,7 +12,6 @@ end
 end
 
 
-
 function obs = track_orientation(obs)
 
 
@@ -95,7 +94,8 @@ end
 
 function obs = remove_gravity(obs)
 
-gS = [0;0;-9.81];
+% gS = [0;0;-9.81];
+gS = [0; 0; mean(obs.imu.accel(1:30,3))];
 
 rotmats = axang2rotm(obs.imu.orientation);
 gB = zeros(size(obs.imu.accel));
