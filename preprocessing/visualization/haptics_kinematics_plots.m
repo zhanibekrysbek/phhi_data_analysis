@@ -97,7 +97,7 @@ end
 
 %% IMU Plot
 
-fig_path = '../../data/plots/plots_preprocessed_v2_1/imu/';
+fig_path = '../../data/plots/plots_preprocessed_v2_1/imu/all_dofs';
 figure('visible','off');
 for ind=progress(1:numel(observations_processed), 'Title', 'IMUplot')
 
@@ -121,9 +121,38 @@ for ind=progress(1:numel(observations_processed), 'Title', 'OrientTracking_plot'
 end
 figure('visible','on');
 
+
+%% Twist
+fig_path = '../../data/plots/plots_preprocessed_v2_1/twist/';
+figure('visible','off');
+for ind=progress(1:numel(observations_processed), 'Title', 'Twist')
+
+    obs = observations_processed(ind);
+
+    plot_imu(obs, 3)
+    saveas(gcf, [fig_path, obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'kinematics', '.jpg'])
+
+end
+figure('visible','on');
+
+
+%% Accel
+fig_path = '../../data/plots/plots_preprocessed_v2_1/imu/accel/';
+figure('visible','off');
+for ind=progress(1:numel(observations_processed), 'Title', 'Accel')
+
+    obs = observations_processed(ind);
+
+    plot_imu(obs, 4)
+    saveas(gcf, [fig_path, obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'kinematics', '.jpg'])
+
+end
+figure('visible','on');
+
+
 %%
 
-obs = observations_processed(20);
+obs = observations_processed(3);
 
 % figure(1)
 % plot_phase(obs,1);
@@ -133,7 +162,7 @@ obs = observations_processed(20);
 % plot_imu(obs,1);
 
 figure(4);
-plot_imu(obs,2)
+plot_imu(obs,4)
 
 
 
