@@ -232,7 +232,7 @@ for i=progress(1:numel(features), 'Title','FeatureExtraction')
     Z(i,end) = yf;
 end
 
-%% PCA and Plot
+%% LDA and Plot
 
 [Z1, W, lambda] = LDA(Z,Y);
 
@@ -252,19 +252,23 @@ t0 = 0;
 Nwinds = ceil((1 - wind_size)/stride);
 
 X = zeros(Nwinds*numel(observations_processed), divisions*28);
+Y = zeros(Nwinds*numel(observations_processed), 3);
 
 for ind=progress(1:numel(observations_processed))
     obs = observations_processed(ind);
-    X((ind-1)*Nwinds+1:ind*Nwinds,:) = sliding_window(obs, wind_size, stride, divisions);
+    [X((ind-1)*Nwinds+1:ind*Nwinds,:), Y((ind-1)*Nwinds+1:ind*Nwinds,:)] = ...
+        sliding_window(obs, wind_size, stride, divisions);
 end
 
+
+
 %% Debugging Sliding Window
+
 obs = observations_processed(2);
 
 wind_size = 0.05;
 stride = 0.02;
 divisions = 5;
-
 
 X = sliding_window(obs, wind_size, stride, divisions);
 
