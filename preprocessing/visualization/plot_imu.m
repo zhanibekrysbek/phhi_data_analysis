@@ -82,16 +82,16 @@ switch opt
         yticks(yts);
         
     case 3
-        % Plot Twist
+        % Plot Twist in Spatial Frame
         
         subplot(211);
-        plot(obs.pose123.time_steps, obs.pose123.twist(:,1:3)); grid on;
+        plot(obs.pose123.time_steps, obs.pose123.twistS(:,1:3)); grid on;
         subtitle('Velocity');
         grid on;
         ylabel('m/s');
         
         subplot(212);
-        plot(obs.pose123.time_steps, obs.pose123.twist(:,4:6)); grid on;
+        plot(obs.pose123.time_steps, obs.pose123.twistS(:,4:6)); grid on;
         subtitle('Angvel');
         grid on;
         ylabel('rad/s');
@@ -129,6 +129,29 @@ switch opt
         set(hL, 'Position',[0.25 0.03 0.01 0.01],'Units','normalized')
         
         sgtitle(sprintf('%s %s %s Twist Spatial Frame', obs.obs_id, obs.traj_type, obs.motion_type ), ...
+            'Interpreter','none');
+        
+    case 5
+        % Plot Twist in Body Frame
+        
+        subplot(211);
+        plot(obs.pose123.time_steps, obs.pose123.twistB(:,1:3)); grid on;
+        subtitle('Velocity');
+        grid on;
+        ylabel('m/s');
+        
+        subplot(212);
+        plot(obs.pose123.time_steps, obs.pose123.twistB(:,4:6)); grid on;
+        subtitle('Angvel');
+        grid on;
+        ylabel('rad/s');
+        xlabel('time, s');
+        
+        hL = legend({'x', 'y', 'z'},'Location','southwest','NumColumns',4);
+        
+        set(hL, 'Position',[0.25 0.03 0.01 0.01],'Units','normalized')
+        
+        sgtitle(sprintf('%s %s %s Twist Body Frame', obs.obs_id, obs.traj_type, obs.motion_type ), ...
             'Interpreter','none');
 end
 

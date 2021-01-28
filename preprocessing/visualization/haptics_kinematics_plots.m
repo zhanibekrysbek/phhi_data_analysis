@@ -130,8 +130,10 @@ for ind=progress(1:numel(observations_processed), 'Title', 'Twist')
     obs = observations_processed(ind);
 
     plot_imu(obs, 3)
-    saveas(gcf, [fig_path, obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'kinematics', '.jpg'])
-
+    saveas(gcf, [fig_path, 'spatial/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'twist_spatial', '.jpg'])
+    
+    plot_imu(obs, 5)
+    saveas(gcf, [fig_path, 'body/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'twist_body', '.jpg'])
 end
 figure('visible','on');
 

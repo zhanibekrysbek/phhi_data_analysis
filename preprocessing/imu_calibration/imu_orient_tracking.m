@@ -81,13 +81,16 @@ end
 
 
 function obs = compute_twist(obs)
-twist = zeros([numel(obs.pose123.time_steps),6]);
-twist(:,4:6) = obs.imu.angvelS;
+
+twistS = zeros([numel(obs.pose123.time_steps),6]);
+twistS(:,4:6) = obs.imu.angvelS;
 
 for i = 1:numel(obs.pose123.time_steps)
-    twist(i,1:3) = cross(obs.pose123.position(i,:)', obs.imu.angvelS(i,:)')' + obs.pose123.linvel(i,:);
+    twistS(i,1:3) = cross(obs.pose123.position(i,:)', obs.imu.angvelS(i,:)')' + obs.pose123.linvel(i,:);
+    
 end
-obs.pose123.twist = twist;
+obs.pose123.twistS = twistS;
+obs.pose123.twistB = [obs.pose123.linvelB, obs.imu.angvel ];
 
 end
 
@@ -109,6 +112,7 @@ end
 
 
 function obs = spatial_angvel(obs)
+
 
 angvelS = zeros(size(obs.imu.angvel));  
 rotmats = axang2rotm(obs.imu.orientation);
