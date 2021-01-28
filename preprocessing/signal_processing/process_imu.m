@@ -21,9 +21,8 @@ function [obs] = process_imu(obs,tf)
     
     obs = calibrate_mag(obs);
     
-    
     % Transform to Spatial frame
-    obs = to_spatial_frame(obs);
+%     obs = to_spatial_frame(obs);
     
 end
 

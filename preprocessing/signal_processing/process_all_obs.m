@@ -25,8 +25,6 @@ for i=progress(1:obsNum)%numel(observations_processed), 'Title','Preprocessing')
     observations_processed(i) = process_imu(observations_processed(i),tf);
     
     observations_processed(i) = get_fsum(observations_processed(i));
-    
-%     observations_processed(i) = obs;
 end
 % profile viewer;
 

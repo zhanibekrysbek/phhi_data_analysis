@@ -10,13 +10,12 @@ observations_imu = adjust_time(observations_processed);
 for i=progress(1:numel(observations_processed), 'Title', 'IMU Orient Tracking')
     obs = observations_imu(i);
     obs = track_orientation(obs);
-    obs = remove_gravity(obs);
-    obs = angvel2spatial(obs);
-    obs = compute_twist(obs);
     obs = rft2spatial(obs);
+    obs = remove_gravity(obs);
+    obs = imu2spatial(obs);
+    obs = compute_twist(obs);
     observations_imu(i) = obs;
 end
-
 
 end
 
@@ -116,21 +115,32 @@ obs.imu.pureAccel = obs.imu.accel - gB;
 
 end
 
+function obs = imu2spatial(obs)
 
-function obs = angvel2spatial(obs)
-
-
-angvelS = zeros(size(obs.imu.angvel));  
-rotmats = axang2rotm(obs.imu.orientation);
-
-for i = 1:size(rotmats,3)
-    angvelS(i,:) = obs.imu.angvel(i,:)*rotmats(:,:,i)';
-end  
-
-obs.imu.angvelS = angvelS;
+    % Get Spatial IMU
+    rotm = axang2rotm(obs.imu.orientation);
     
-end
+    accelS = zeros(size(obs.imu.accel));
+    magS = zeros(size(obs.imu.mag));
+    gyroS = zeros(size(obs.imu.gyro));
+    angvelS = zeros(size(obs.imu.angvel));  
+    pureAccelS = zeros(size(obs.imu.pureAccel)); 
+    
+    for i=1:length(accelS)
+        accelS(i,:) = rotm(:,:,i)*obs.imu.accel(i,:)';
+        magS(i,:) = rotm(:,:,i)*obs.imu.mag(i,:)';
+        gyroS(i,:) = rotm(:,:,i)*obs.imu.gyro(i,:)';
+        angvelS(i,:) = rotm(:,:,i)*obs.imu.angvel(i,:)';
+        pureAccelS(i,:) = rotm(:,:,i)*obs.imu.pureAccel(i,:)';
+    end
+    
+    obs.imu.accelS = accelS;
+    obs.imu.magS = magS;
+    obs.imu.gyroS = gyroS;
+    obs.imu.angvelS = angvelS;
+    obs.imu.pureAccelS = pureAccelS;
 
+end
 
 function obs = rft2spatial(obs)
 
