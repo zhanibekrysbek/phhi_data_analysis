@@ -30,8 +30,6 @@ function [obs,tf] = process_rft(obs)
     obs = lowpass_rft(obs, rftFS, lcutoff, hcutoff);
     
     
-    
-%     
     % swap the sensors if variable names and sensor IDs are inconsistent
     if strcmp(obs.rft1.frame_id, rft_ids{2})
         temp = obs.rft1;
@@ -60,8 +58,8 @@ end
 
 function obs = process_torques(obs)
     
-rv1 = [ 0.2275, 0, -0.015];
-rv2 = [-0.2275, 0, -0.015];
+rv1 = [ 0.235, 0, -0.027];
+rv2 = [-0.235, 0, -0.027];
 
 tcomp1 = cross(obs.rft1.torque, repmat(rv1,[numel(obs.rft1.time_steps), 1]));
 tcomp2 = cross(obs.rft2.torque, repmat(rv2,[numel(obs.rft2.time_steps), 1]));

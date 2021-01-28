@@ -1,11 +1,20 @@
 function observations_imu = imu_orient_tracking(observations_processed)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%imu_orient_tracking Tracks the orientation from IMU data using Kalman
+%Filter.
+
+%   Also, with the same orientation data it converts the signals to spatial
+%   frame.
 
 observations_imu = adjust_time(observations_processed);
 
 for i=progress(1:numel(observations_processed), 'Title', 'IMU Orient Tracking')
-    observations_imu(i) = track_orientation(observations_imu(i));
+    obs = observations_imu(i);
+    obs = track_orientation(obs);
+    obs = remove_gravity(obs);
+    obs = angvel2spatial(obs);
+    obs = compute_twist(obs);
+    obs = rft2spatial(obs);
+    observations_imu(i) = obs;
 end
 
 
@@ -13,7 +22,6 @@ end
 
 
 function obs = track_orientation(obs)
-
 
     % Identify Initial location (Table A or Table B)
     obs_id_num = split(obs.obs_id,'_');
@@ -35,9 +43,10 @@ function obs = track_orientation(obs)
     end
 
     
-    % 1 Gs, G = 0.0001 T
     accel = obs.imu.accel;
     gyro = obs.imu.gyro/180*pi;
+    
+    % Remove the bias from gyro, using the readings when sensor is at rest
     if strcmp(obs.obs_id, 'Sanket_Vignesh_1_1')
         gyro_mean = mean(gyro(end-29:end,:));
     else
@@ -47,6 +56,7 @@ function obs = track_orientation(obs)
     gyro = gyro - gyro_mean;
     mag = obs.imu.mag; % convert from gauss to micro Tesla. Mag is pre calibrated
 
+    % Convert it to ENU Frame
     if mag(1,2) < 0
         gS_ENU = gS_ENU';
     end
@@ -72,10 +82,6 @@ function obs = track_orientation(obs)
     
     obs.imu.orientation = orient;
     obs.imu.angvel = angvel;
-    
-    obs = remove_gravity(obs);
-    obs = spatial_angvel(obs);
-    obs = compute_twist(obs);
     
 end
 
@@ -111,7 +117,7 @@ obs.imu.pureAccel = obs.imu.accel - gB;
 end
 
 
-function obs = spatial_angvel(obs)
+function obs = angvel2spatial(obs)
 
 
 angvelS = zeros(size(obs.imu.angvel));  
@@ -125,4 +131,49 @@ obs.imu.angvelS = angvelS;
     
 end
 
+
+function obs = rft2spatial(obs)
+
+    axangs = interp1(obs.imu.time_steps, obs.imu.orientation, obs.rft1.time_steps);
+
+    rotm = axang2rotm(axangs);
+    
+    force_s = zeros(size(obs.rft1.force));
+    force_s_1 = zeros(size(obs.rft1.force));
+    torque_s = zeros(size(obs.rft1.torque));
+    torque_s_1 = zeros(size(obs.rft1.torque));
+    ttsum_S = zeros(size(obs.rft1.torque));
+    ttorque_1_S = zeros(size(obs.rft1.torque));
+    ttorque_2_S = zeros(size(obs.rft1.torque));
+    
+
+    for i=1:length(axangs)
+
+        force_s(i,:) = rotm(:,:,i)*obs.rft1.force(i,:)';
+        force_s_1(i,:) = rotm(:,:,i)*obs.rft2.force(i,:)';
+
+        torque_s(i,:) = rotm(:,:,i)*obs.rft1.torque(i,:)';
+        torque_s_1(i,:) = rotm(:,:,i)*obs.rft2.torque(i,:)';
+        
+        ttorque_1_S(i,:) = rotm(:,:,i)*obs.rft1.ttorque(i,:)';
+        ttorque_2_S(i,:) = rotm(:,:,i)*obs.rft2.ttorque(i,:)';
+        
+        ttsum_S(i,:) = rotm(:,:,i)*obs.fsum.ttsum(i,:)';
+
+    end
+    
+    obs.rft1.forceS = force_s;
+    obs.rft1.torqueS = torque_s;
+    obs.rft1.ttorqueS = ttorque_1_S;
+    
+    obs.rft2.forceS = force_s_1;
+    obs.rft2.torqueS = torque_s_1;
+    obs.rft2.ttorqueS = ttorque_2_S;
+    
+    obs.fsum.forceS = obs.rft1.forceS + obs.rft2.forceS;
+    obs.fstretch.forceS = obs.rft1.forceS - obs.rft2.forceS;
+    
+    obs.fsum.ttsum_S = ttsum_S;
+    
+end
 

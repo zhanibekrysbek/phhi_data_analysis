@@ -32,7 +32,6 @@ end
 
 %% Run IMU orientation tracking
 
-
 observations_imufilt = imu_orient_tracking(observations_processed);
 
 
@@ -45,8 +44,8 @@ for i=progress(1:numel(observations_imufilt), 'Title', 'Saving the data')
 end
 
 
-%% Plot a dozen of samples
-for i=progress(21:25)
+%% Plot a dozen of samples for ArUco Pose Filtering
+for i=progress(21:23)
     obs = observations_processed(i);
     obs2 = observations(i);
     
@@ -227,44 +226,4 @@ figure(21);
     grid on;
 
     
-    
-%% Orientation Tracking
-obs = observations_processed(1);
-% tic;
-[orient, angvel] = imu_orient_tracking(obs);
-% toc
-
-
-%%
-        figure(1);
-
-        % Position
-        set(gcf,'Position',[1024 768 1024 768])
-        
-        subplot(2,2,1)
-        plot(obs.pose123.time_steps, obs.pose123.position)
-        subtitle(sprintf('%s Position', 'Aruco'))
-        grid on
-
-        subplot(2,2,2)
-        plot(obs.pose123.time_steps, obs.pose123.orientation) %, ...
-%              obs_raw.pose123.time_steps, obs_raw.pose123.orientation,'.', ...
-%              'Markersize',1);
-        subtitle(sprintf('%s Orientation', 'Aruco'))
-        grid on
-        yt = yticks;
-        yts = yt(1):0.5:yt(end);
-        yticks(yts);
-
-        subplot(2,2,3)
-        plot(timu, angvel)
-        subtitle(sprintf('%s Angular Velocty', 'KF'))
-        grid on
-
-        subplot(2,2,4)
-        plot(timu, orient)
-        subtitle(sprintf('%s Orientation', 'KF'))
-        grid on
-        yticks(yts);
-        
-
+   
