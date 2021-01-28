@@ -241,27 +241,6 @@ plot3(Z1(Y==0,1),Z1(Y==0,2),Z1(Y==0,3), 'o'); hold on;
 plot3(Z1(Y==1,1),Z1(Y==1,2),Z1(Y==1,3), 'x'); hold off; grid on;
 
 
-%% Sliding Window
-
-
-wind_size = 0.05;
-stride = 0.02;
-divisions = 5;
-
-t0 = 0;
-Nwinds = ceil((1 - wind_size)/stride);
-
-X = zeros(Nwinds*numel(observations_processed), divisions*28);
-Y = zeros(Nwinds*numel(observations_processed), 3);
-
-for ind=progress(1:numel(observations_processed))
-    obs = observations_processed(ind);
-    [X((ind-1)*Nwinds+1:ind*Nwinds,:), Y((ind-1)*Nwinds+1:ind*Nwinds,:)] = ...
-        sliding_window(obs, wind_size, stride, divisions);
-end
-
-
-
 %% Debugging Sliding Window
 
 obs = observations_processed(2);

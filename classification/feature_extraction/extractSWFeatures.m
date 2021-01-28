@@ -1,4 +1,4 @@
-function [X,Y] = extractSWFeats(observations_processed)
+function [X,Y] = extractSWFeatures(observations_processed,option)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 global wind_size stride divisions opt;
@@ -6,7 +6,7 @@ global wind_size stride divisions opt;
 wind_size = 0.05;
 stride = 0.02;
 divisions = 5;
-opt = 1; % Option for feature data
+opt = option; % Option for feature data
 
 Nwinds = ceil((1 - wind_size)/stride);
 
@@ -70,6 +70,8 @@ global divisions opt;
 switch opt
     case 1
         % Raw Signals in Body Frame (except position and orientation)
+        
+        % Get the signal for specified window [t0,tf]
         Irft = obs.rft1.tnorm <= tf & obs.rft1.tnorm >= t0;
         Ipos = obs.pose123.tnorm <= tf & obs.pose123.tnorm >= t0;
         Iimu = obs.imu.tnorm <= tf & obs.imu.tnorm >= t0;
@@ -91,22 +93,24 @@ switch opt
         tw = obs.pose123.twistB(Ipos,:);
 
         % Get the means per window for listed signals
-        f1_v = extract_means(f1,divisions);
-        f2_v = extract_means(f2,divisions);
-        tor1_v = extract_means(tor1,divisions);
-        tor2_v = extract_means(tor2,divisions);
+        f1_v = extract_means(f1);
+        f2_v = extract_means(f2);
+        tor1_v = extract_means(tor1);
+        tor2_v = extract_means(tor2);
 
-        pos_v = extract_means(pos, divisions);
-        orient_v = extract_means(orient , divisions);
+        pos_v = extract_means(pos);
+        orient_v = extract_means(orient);
 
-        accel_v = extract_means(accel, divisions);
-        tw_v = extract_means(tw, divisions);
+        accel_v = extract_means(accel);
+        tw_v = extract_means(tw);
         
         % Compile them together and output
         feats = [f1_v tor1_v f2_v tor2_v pos_v orient_v tw_v accel_v ];
         
     case 2
         % Raw Signals in Body Frame (except position and orientation)
+        
+        % Get the signal for specified window [t0,tf
         Irft = obs.rft1.tnorm <= tf & obs.rft1.tnorm >= t0;
         Ipos = obs.pose123.tnorm <= tf & obs.pose123.tnorm >= t0;
         Iimu = obs.imu.tnorm <= tf & obs.imu.tnorm >= t0;
