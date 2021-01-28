@@ -6,6 +6,7 @@ function [] = plot_imu(obs,opt)
 switch opt
     
     case 1
+        % All DOFs
         subplot(3,1,1)
         plot(obs.imu.time_steps, obs.imu.accel);
         subtitle('accel');
@@ -33,17 +34,15 @@ switch opt
         
         
     case 2
-        % plot pose tracking results
+        % plot pose tracking results vs ArUco
 
-        % Position
-%         set(gcf,'Position',[1024 768 1024 768])
-        
+        % Position from ArUco
         subplot(2,2,1)
         plot(obs.pose123.time_steps, obs.pose123.position)
         subtitle(sprintf('%s Position', 'Aruco'))
         grid on;
         ylabel('m')
-
+        % Orientation from ArUco
         subplot(2,2,2)
         plot(obs.pose123.time_steps, obs.pose123.orientation);
         subtitle(sprintf('%s Orientation', 'Aruco'))
@@ -51,6 +50,7 @@ switch opt
         yt1 = yticks;
         ylabel('axis-angle')
 
+        % AngVel from KF
         subplot(2,2,3)
         plot(obs.imu.time_steps, obs.imu.angvel)
         subtitle(sprintf('%s Angular Velocty', 'KF'))
@@ -58,6 +58,7 @@ switch opt
         xlabel('time, sec');
         ylabel('rad/sec')
 
+        % Orientation from KF
         subplot(2,2,4)
         plot(obs.imu.time_steps, obs.imu.orientation)
         subtitle(sprintf('%s Orientation', 'KF'))
@@ -82,8 +83,8 @@ switch opt
         yticks(yts);
         
     case 3
-        % Plot Twist in Spatial Frame
         
+        % Plot Twist in Spatial Frame
         subplot(211);
         plot(obs.pose123.time_steps, obs.pose123.twistS(:,1:3)); grid on;
         subtitle('Velocity');
@@ -133,7 +134,6 @@ switch opt
         
     case 5
         % Plot Twist in Body Frame
-        
         subplot(211);
         plot(obs.pose123.time_steps, obs.pose123.twistB(:,1:3)); grid on;
         subtitle('Velocity');

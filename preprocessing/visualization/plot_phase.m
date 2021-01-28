@@ -4,15 +4,12 @@ function [] = plot_phase(obs,opt)
 
 switch opt
     case 1
+        % Phase Angles in Body Frame
         subplot(2,1,1)
         % Phase Angles
         fsum_ph = atan2d(obs.fsum.force(:,2),obs.fsum.force(:,1));
-%         fsum_ph = unwrap(fsum_ph);
-
         linacc_ph = atan2d(obs.pose123.linaccB(:,2), obs.pose123.linaccB(:,1));
-%         linacc_ph = unwrap(linacc_ph);
         imuacc_ph = atan2d(obs.imu.accel(:,2), obs.imu.accel(:,1));
-%         imuacc_ph = unwrap(imuacc_ph);
         
         fs = plot(obs.rft1.time_steps, fsum_ph,'.'); hold on;
         lacc = plot(obs.pose123.time_steps, linacc_ph, '.');
@@ -41,16 +38,14 @@ switch opt
             'Interpreter','none');
         
     case 2
-        subplot(2,1,1)
+        
         % Phase Angles in Spatial Frame
+        subplot(2,1,1)
         fsum_ph = atan2d(obs.fsum.forceS(:,2),obs.fsum.forceS(:,1));
-%         fsum_ph = unwrap(fsum_ph);
         
         linacc_ph = atan2d(obs.pose123.linacc(:,2), obs.pose123.linacc(:,1));
-%         linacc_ph = unwrap(linacc_ph);
         
         imuacc_ph = atan2d(obs.imu.accelS(:,2), obs.imu.accelS(:,1));
-%         imuacc_ph = unwrap(imuacc_ph);
         
         
         fs = plot(obs.rft1.time_steps, fsum_ph,'.'); hold on;
@@ -81,7 +76,7 @@ switch opt
             'Interpreter','none');
     
     case 3
-
+        % All dofs
         subplot(5,1,1);
         plot(obs.rft1.time_steps, obs.fsum.force(:,1)); hold on;
         plot(obs.imu.time_steps, obs.imu.accel(:,1)); hold off;
@@ -125,7 +120,7 @@ switch opt
         xticks(xts(1):xts(end));
         
         hL = legend([f1,a1], {'force', 'accel'}, 'NumColumns', 2);
-        sgtitle(sprintf('IMU Accel & Fsum consistency check. %s    %s    %s  Body Frame', obs.obs_id, obs.traj_type, obs.motion_type), ...
+        sgtitle(sprintf('Accel vs Fsum. %s    %s    %s  Body Frame', obs.obs_id, obs.traj_type, obs.motion_type), ...
             'Interpreter','none');
         set(hL, 'Position',[0.51 0.03 0.01 0.01],'Units','normalized')
 

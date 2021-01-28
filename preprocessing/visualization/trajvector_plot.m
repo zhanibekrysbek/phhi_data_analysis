@@ -3,8 +3,8 @@ function [] = trajvector_plot(obs, opt)
 %   Detailed explanation goes here
 step_ = 40; % 1e-1 seconds
 
-rv1 = [ 0.2275, 0, -0.015];
-rv2 = [-0.2275, 0, -0.015];
+rv1 = [ 0.235, 0, -0.027];
+rv2 = [-0.235, 0, -0.027];
 
 
 inds = 1:step_:numel(obs.pose123.time_steps);
