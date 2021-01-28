@@ -1,7 +1,48 @@
-function [X, Y] = sliding_window(obs, wind_size, stride, divisions, opt)
-%sliding_window Summary of this function goes here
+function [X,Y] = extractSWFeats(observations_processed)
+%UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
+global wind_size stride divisions opt;
 
+wind_size = 0.05;
+stride = 0.02;
+divisions = 5;
+opt = 1; % Option for feature data
+
+Nwinds = ceil((1 - wind_size)/stride);
+
+X = zeros(Nwinds*numel(observations_processed), divisions*28);
+Y = zeros(Nwinds*numel(observations_processed), 5);
+
+for ind=progress(1:numel(observations_processed), 'Title', 'ExtractingSWFeatures')
+    obs = observations_processed(ind);
+    
+    [X((ind-1)*Nwinds+1:ind*Nwinds,:), Y((ind-1)*Nwinds+1:ind*Nwinds,3:end)] = ...
+        sliding_window(obs);
+    Y((ind-1)*Nwinds+1:ind*Nwinds,1) = ind; % obs_id
+    
+    
+    % Identify Initial location (Table A or Table B)
+    obs_id_num = split(obs.obs_id,'_');
+    obs_id_num = str2double(obs_id_num{end});
+
+    if mod(obs_id_num,2)==1
+        obs_id = 0; % Started from Table A
+    elseif mod(obs_id_num,2)==0
+        obs_id = 1; % Started from Table B
+    end
+    
+    Y((ind-1)*Nwinds+1:ind*Nwinds,2) = obs_id; % obs_id
+    
+end
+
+
+end
+
+
+% Sliding Window Mechanism to traverse the observation data one by one
+function [X, Y] = sliding_window(obs)
+
+global wind_size stride divisions;
 
 t0 = 0;
 Nwinds = ceil((1 - wind_size)/stride);
@@ -13,17 +54,18 @@ X = zeros(Nwinds, divisions*28);
 for ind = 1:Nwinds
     tf = t0 + wind_size;
     
-    X(ind,:) = get_features(obs,t0,tf,divisions,opt);
-    
-%     fprintf("%d %f\n",ind, t0);
-    
+    % feature types are implemented in modular fashion
+    X(ind,:) = get_features(obs,t0,tf); 
+        
     t0 = t0 + stride;
 end
 
 end
 
 
-function feats = get_features(obs, t0, tf, divisions, opt)
+function feats = get_features(obs, t0, tf)
+
+global divisions opt;
 
 switch opt
     case 1
@@ -44,11 +86,11 @@ switch opt
 
         % Linear Acceleration
         accel = obs.imu.pureAccel(Iimu,:);
-    %     gyro = obs.imu.gyro(Iimu,:);
 
         % Twist
-        tw = obs.pose123.twist(Ipos,:);
+        tw = obs.pose123.twistB(Ipos,:);
 
+        % Get the means per window for listed signals
         f1_v = extract_means(f1,divisions);
         f2_v = extract_means(f2,divisions);
         tor1_v = extract_means(tor1,divisions);
@@ -58,34 +100,34 @@ switch opt
         orient_v = extract_means(orient , divisions);
 
         accel_v = extract_means(accel, divisions);
-    %     gyro_v = extract_means(gyro, divisions);
         tw_v = extract_means(tw, divisions);
-
+        
+        % Compile them together and output
         feats = [f1_v tor1_v f2_v tor2_v pos_v orient_v tw_v accel_v ];
         
     case 2
-        % Raw Signals in Spatial
+        % Raw Signals in Body Frame (except position and orientation)
         Irft = obs.rft1.tnorm <= tf & obs.rft1.tnorm >= t0;
         Ipos = obs.pose123.tnorm <= tf & obs.pose123.tnorm >= t0;
         Iimu = obs.imu.tnorm <= tf & obs.imu.tnorm >= t0;
 
         % Force Torque
-        f1 = obs.rft1.force(Irft,:);
-        f2 = obs.rft2.force(Irft,:);
-        tor1 = obs.rft1.torque(Irft,:);
-        tor2 = obs.rft2.torque(Irft,:);
+        f1 = obs.rft1.forceS(Irft,:);
+        f2 = obs.rft2.forceS(Irft,:);
+        tor1 = obs.rft1.torqueS(Irft,:);
+        tor2 = obs.rft2.torqueS(Irft,:);
 
         % Pose
         pos = obs.pose123.position(Ipos,:);
         orient = obs.imu.orientation(Ipos,:);
 
         % Linear Acceleration
-        accel = obs.imu.pureAccel(Iimu,:);
-    %     gyro = obs.imu.gyro(Iimu,:);
+        accel = obs.imu.pureAccelS(Iimu,:);
 
         % Twist
-        tw = obs.pose123.twist(Ipos,:);
+        tw = obs.pose123.twistS(Ipos,:);
 
+        % Get the means per window for listed signals
         f1_v = extract_means(f1,divisions);
         f2_v = extract_means(f2,divisions);
         tor1_v = extract_means(tor1,divisions);
@@ -95,18 +137,19 @@ switch opt
         orient_v = extract_means(orient , divisions);
 
         accel_v = extract_means(accel, divisions);
-    %     gyro_v = extract_means(gyro, divisions);
         tw_v = extract_means(tw, divisions);
-
+        
+        % Compile them together and output
         feats = [f1_v tor1_v f2_v tor2_v pos_v orient_v tw_v accel_v ];
 end
 end
 
 
-function mvec = extract_means(x,divisions)
+% Get mean values of the signal over divions within the window
+function mvec = extract_means(x)
+global divisions
 
     [len,dim] = size(x);
-%     fprintf("%d %d\n", len, dim)
     
     sub_div = len/divisions;
 
@@ -116,7 +159,6 @@ function mvec = extract_means(x,divisions)
         t1 = floor((i-1)*sub_div)+1;
         t2 = floor(i*sub_div);
         mvec(i,:) = mean(x(t1:t2,:));
-%         fprintf("%d %d\n", t1,t2);
     end
 
     mvec = reshape(mvec',1, numel(mvec));
@@ -144,5 +186,8 @@ function Y = get_labels(obs, Nwinds)
     end
 
 end
+
+
+
 
 
