@@ -79,8 +79,9 @@ switch opt
         % Force Torque
         f1 = obs.rft1.force(Irft,:);
         f2 = obs.rft2.force(Irft,:);
-        tor1 = obs.rft1.torque(Irft,:);
-        tor2 = obs.rft2.torque(Irft,:);
+        % Total torque
+        tor1 = obs.rft1.ttorque(Irft,:);
+        tor2 = obs.rft2.ttorque(Irft,:);
 
         % Pose
         pos = obs.pose123.position(Ipos,:);
@@ -118,8 +119,9 @@ switch opt
         % Force Torque
         f1 = obs.rft1.forceS(Irft,:);
         f2 = obs.rft2.forceS(Irft,:);
-        tor1 = obs.rft1.torqueS(Irft,:);
-        tor2 = obs.rft2.torqueS(Irft,:);
+        % Total torque
+        tor1 = obs.rft1.ttorqueS(Irft,:); 
+        tor2 = obs.rft2.ttorqueS(Irft,:);
 
         % Pose
         pos = obs.pose123.position(Ipos,:);
