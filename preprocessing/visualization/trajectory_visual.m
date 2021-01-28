@@ -188,10 +188,6 @@ xlabel('time, normalized');
 sgtitle('Velocity along y-axis')
 
 
-
-
-
-
 %% Orientation vs Motion Type
 
 
@@ -233,8 +229,6 @@ grid on; hold off; box on;
 xlabel('time, normalized');
 sgtitle('Motion type vs Orientation')
 ylim([-2.4,5])
-
-
 
 
 %% Overall Summary
