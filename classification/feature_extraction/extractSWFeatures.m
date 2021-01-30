@@ -73,7 +73,7 @@ end
 
 function feats = get_features(obs, t0, tf)
 
-global divisions opt;
+global opt;
 
 switch opt
     case 1
