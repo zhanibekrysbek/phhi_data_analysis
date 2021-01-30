@@ -5,4 +5,4 @@ preprocessing/signal_processing/.DS_Store
 *.DS_Store
 *.asv
 */*.asv
-
+*/.ipynb_checkpoints
