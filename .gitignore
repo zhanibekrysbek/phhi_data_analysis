@@ -1,5 +1,8 @@
 preprocessing/signal_processing/*.asv
 preprocessing/signal_processing/ARCHIVE/
 preprocessing/signal_processing/.DS_Store
-data/plots/.DS_Store
-data/plots/plots_preprocessed_v2_1/.DS_Store
+*/.DS_Store
+*.DS_Store
+*.asv
+*/*.asv
+
