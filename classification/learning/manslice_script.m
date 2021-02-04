@@ -18,7 +18,9 @@ data_option = 1;
 [X,Y] = extractSWFeatures(observations_processed, data_option);
 
 % Normalize
-Xnorm = 2*(X-min(X))./(max(X)-min(X))-1;
+xnorm =@(X) 2*(X-min(X))./(max(X)-min(X))-1;
+% Xnorm = 2*(X-min(X))./(max(X)-min(X))-1;
+Xnorm = xnorm(X);
 
 % PCA
 [coeff,score,latent] = pca(X);
@@ -28,37 +30,80 @@ X_pca = X*coeff;
 Xnorm_pca = Xnorm*coeff_norm;
 
 %% Slicing
-rng(2);
-k = 2;
-idx_norm_pca = zeros(size(X,1),1);
-idx_norm_pca(Xnorm_pca(:,3)>0) = 1;
 
+rng(11);
+k = 2;
+
+
+% Remove Lifting Up and Down components
+
+% Separation line X(:,[2,3]) plane 
+p1 = [1.238, -0.442];
+p2 = [0.656, 2.158];
+P = [p1;p2];
+a = polyfit(P(:,1),P(:,2),1);
+
+I1 = Xnorm_pca(:,3) - Xnorm_pca(:,2)*a(1) - a(2) > 0;
+
+idx_norm_pca = zeros(size(X,1),1);
+% idx_norm_pca(I1) = 1;
+% idx_norm_pca(~I1) = 2;
+
+% Focus on the body
+X1 = X(I1,:);
+Y1 = Y(I1,:);
+
+% Separation line X(:,[1,3]) plane 
+p1 = [-1.918, 0.75];
+p2 = [1.94, 1.328];
+P = [p1;p2];
+a = polyfit(P(:,1),P(:,2),1);
+
+I2 = Xnorm_pca(:,3) - Xnorm_pca(:,1)*a(1) - a(2) > 0;
+
+idx_norm_pca = zeros(size(X1,1),1);
+idx_norm_pca(I2) = 1;
+idx_norm_pca(~I2) = 2;
+
+% Normalize
+% Focus on the body
+% X1 = X(I1,:);
+% Y1 = Y(I1,:);
+
+% [coeff,score,latent] = pca(X1);
+% [coeff_norm, score_norm, latent_norm] = pca(Xnorm_pca);
+
+% X_pca = X*coeff;
+% Xnorm_pca = Xnorm*coeff_norm;
+
+% [idx_norm_pca,C_norm_pca,sumd_norm,D_norm] = kmeans(Xnorm_pca(:,1:20),k);
 
 %% 
 idx_temp = idx_norm_pca;
 Xtemp = Xnorm_pca;
 
+Ytemp = Y1;
 %% Visualize over in time domain
 
 % close all
 
 figure(1);
-histogram2(Y(:,3)/max(Y(:,3)), idx_temp, [max(Y(:,3)),k])
+histogram2(Ytemp(:,3)/max(Ytemp(:,3)), idx_temp, [max(Ytemp(:,3)),k])
 title('All Data')
 
 figure(2);
-I = Y(:,4) == 0;
+I = Ytemp(:,4) == 0;
 % subplot(1,2,1);
-histogram2(Y(I,3)/max(Y(I,3)), idx_temp(I), [max(Y(:,3)),k])
+histogram2(Y(I,3)/max(Y(I,3)), idx_temp(I), [max(Ytemp(:,3)),k])
 title('Trajectory type AB1')
 xlabel('time')
 ylabel('clusters')
 zlabel('occurance')
 
 figure(3)
-I = Y(:,4) == 1;
+I = Ytemp(:,4) == 1;
 % subplot(1,2,2);
-histogram2(Y(I,3)/max(Y(I,3)), idx_temp(I), [max(Y(:,3)),k])
+histogram2(Ytemp(I,3)/max(Ytemp(I,3)), idx_temp(I), [max(Ytemp(:,3)),k])
 title('Trajectory type AB2')
 xlabel('time')
 ylabel('clusters')
@@ -72,18 +117,18 @@ zlabel('occurance')
 
 
 figure(5)
-I = Y(:,5) == 0;
+I = Ytemp(:,5) == 0;
 % subplot(1,2,2);
-histogram2(Y(I,3)/max(Y(I,3)), idx_temp(I), [max(Y(:,3)),k])
+histogram2(Ytemp(I,3)/max(Ytemp(I,3)), idx_temp(I), [max(Ytemp(:,3)),k])
 title('Serial Movement')
 xlabel('time')
 ylabel('clusters')
 zlabel('occurance')
 
 figure(6)
-I = Y(:,5) == 1;
+I = Ytemp(:,5) == 1;
 % subplot(1,2,2);
-histogram2(Y(I,3)/max(Y(I,3)), idx_temp(I), [max(Y(:,3)),k])
+histogram2(Ytemp(I,3)/max(Ytemp(I,3)), idx_temp(I), [max(Ytemp(:,3)),k])
 title('Parallel Movement')
 xlabel('time')
 ylabel('clusters')
