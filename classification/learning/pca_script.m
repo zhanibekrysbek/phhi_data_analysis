@@ -19,6 +19,7 @@ data_option = 1;
 
 % Normalize
 Xnorm = 2*(X-min(X))./(max(X)-min(X))-1;
+% Xnorm = (X-mean(X))./std(X);
 
 % PCA
 [coeff,score,latent] = pca(X);
@@ -27,6 +28,16 @@ Xnorm = 2*(X-min(X))./(max(X)-min(X))-1;
 X_pca = X*coeff;
 Xnorm_pca = Xnorm*coeff_norm;
 
+%% Box Plot of the data
+
+I = 1:5:140;
+figure(31);
+boxplot(X(:,I))
+title('raw')
+
+figure(32);
+boxplot(Xnorm_pca(:,I))
+title('normalized')
 
 %% Visualize coeffs
 % close all;
@@ -72,7 +83,7 @@ for tonorm = 1:2
     sgtitle(sprintf('PCA weight dist %s %s', norm_option{tonorm}, data_version{data_option}), 'Interpreter','None');
 
     fig_path = ['../../data/plots/clustering/',data_version{data_option}];
-    exportgraphics(gcf, [fig_path, '/pca_weights_',data_version{data_option},'_',norm_option{tonorm}, '.jpg'], 'Resolution', 300)
+%     exportgraphics(gcf, [fig_path, '/pca_weights_',data_version{data_option},'_',norm_option{tonorm}, '.jpg'], 'Resolution', 300)
 end
 %% Plot principal components
 
