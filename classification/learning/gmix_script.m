@@ -14,7 +14,7 @@ norm_option = {'unnormalized','normalized'};
 
 %% Load Features
 
-data_option = 2;
+data_option = 1;
 
 [X,Y] = extractSWFeatures(observations_processed, data_option);
 
@@ -42,7 +42,7 @@ idx_norm = cluster(gmfit,Xnorm);
 gmfit = fitgmdist(X_pca, k, 'RegularizationValue', 0.01);
 idx_pca = cluster(gmfit,X_pca);
 
-gmfit = fitgmdist(Xnorm_pca, k, 'RegularizationValue', 0.01);
+gmfit = fitgmdist(Xnorm_pca(:,1:20), k, 'RegularizationValue', 0.01);
 idx_norm_pca = cluster(gmfit,Xnorm_pca);
 
 
@@ -52,8 +52,8 @@ idx_temp = idx_norm_pca;
 Xtemp = Xnorm_pca;
 
 %% Visualize over in time domain
-close all
 
+% close all
 
 figure(1);
 histogram2(Y(:,3)/max(Y(:,3)), idx_temp, [max(Y(:,3)),k])
@@ -64,12 +64,18 @@ I = Y(:,4) == 0;
 % subplot(1,2,1);
 histogram2(Y(I,3)/max(Y(I,3)), idx_temp(I), [max(Y(:,3)),k])
 title('Trajectory type AB1')
+xlabel('time')
+ylabel('clusters')
+zlabel('occurance')
 
 figure(3)
 I = Y(:,4) == 1;
 % subplot(1,2,2);
 histogram2(Y(I,3)/max(Y(I,3)), idx_temp(I), [max(Y(:,3)),k])
 title('Trajectory type AB2')
+xlabel('time')
+ylabel('clusters')
+zlabel('occurance')
 
 % figure(4)
 % I = Y(:,2) == 0;
@@ -83,12 +89,18 @@ I = Y(:,5) == 0;
 % subplot(1,2,2);
 histogram2(Y(I,3)/max(Y(I,3)), idx_temp(I), [max(Y(:,3)),k])
 title('Serial Movement')
+xlabel('time')
+ylabel('clusters')
+zlabel('occurance')
 
 figure(6)
 I = Y(:,5) == 1;
 % subplot(1,2,2);
 histogram2(Y(I,3)/max(Y(I,3)), idx_temp(I), [max(Y(:,3)),k])
 title('Parallel Movement')
+xlabel('time')
+ylabel('clusters')
+zlabel('occurance')
 
 
 %% LDA 
@@ -111,34 +123,37 @@ idx_temp = idx_norm_pca;
 Xtemp = Xnorm_pca;
 figure(13);
 cmap = hsv(k);
+
+obs_id = 100;
 c = zeros(numel(idx_temp),3);
-for i = 1:numel(idx_temp)
-    c(i,:) = cmap(idx_temp(i),:);
+for i = 1:k%numel(idx_temp)
+%     c(i,:) = cmap(idx_temp(i),:);
+    Is = idx_temp==i & Y(:,5)==1;
+    scatter3(Xtemp(Is,1), Xtemp(Is,2), Xtemp(Is,3),10,cmap(i,:)); hold on;
 end
-scatter3(Xtemp(:,1), Xtemp(:,2), Xtemp(:,3),10,c); 
+
 xlabel('Component 1')
 ylabel('Component 2')
 zlabel('Component 3')
 
-grid on;
-legend({'1', '2', '3'})
+grid on; hold off;
+legend(num2str([1:k]'));
 
 
 
 %% Per observation
 
-obs_id = 1;
+obs_id = 10;
 obs = observations_processed(obs_id);
 
 I = Y(:,1) == obs_id;
 
 figure;
-gscatter(Y(I,3)/max(Y(I,3)), idx(I));
+gscatter(Y(I,3)/max(Y(I,3)), idx_norm_pca(I));
 xlabel('normalized time');
 ylabel('cluster group')
 title(sprintf('%s %s %s', obs.motion_type, obs.traj_type, obs.obs_id),...
     'Interpreter', 'none')
-
 
 
 
