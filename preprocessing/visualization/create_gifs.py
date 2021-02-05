@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import os
 from tqdm import tqdm
 from PIL import Image
-from pygifsicle import optimize
+from pygifsicle import optimize, gifsicle
 
 
 import pickle
@@ -93,7 +93,15 @@ def create_gif(tt0, ttf, temp_df, obs):
     
     images[0].save(gifpath, format='GIF', append_images=images[1:],
                     save_all=True, duration=100/3, loop=0, optimize=True);
-    optimize(gifpath, optimize = True)
+    # optimize(gifpath)
+    gifsicle(
+        sources=[gifpath],  # or a single_file.gif
+        # or just omit it and will use the first source provided.
+        destination=gifpath,
+        optimize=True,  # Whetever to add the optimize flag of not
+        colors=128,  # Number of colors t use
+        options=["--verbose"]  # Options to use.
+    )
         
 
 
