@@ -30,20 +30,20 @@ Xnorm_pca = Xnorm*coeff_norm;
 
 %% GMModel
 
-rng(2);
-k = 6;
+rng(10);
+k = 12;
 
-gmfit = fitgmdist(X, k, 'RegularizationValue', 0.01);
-idx = cluster(gmfit,X);
-
-gmfit = fitgmdist(Xnorm, k, 'RegularizationValue', 0.01);
-idx_norm = cluster(gmfit,Xnorm);
-
-gmfit = fitgmdist(X_pca, k, 'RegularizationValue', 0.01);
-idx_pca = cluster(gmfit,X_pca);
+% gmfit = fitgmdist(X, k, 'RegularizationValue', 0.01);
+% idx = cluster(gmfit,X);
+% 
+% gmfit = fitgmdist(Xnorm, k, 'RegularizationValue', 0.01);
+% idx_norm = cluster(gmfit,Xnorm);
+% 
+% gmfit = fitgmdist(X_pca, k, 'RegularizationValue', 0.01);
+% idx_pca = cluster(gmfit,X_pca);
 
 gmfit = fitgmdist(Xnorm_pca(:,1:20), k, 'RegularizationValue', 0.01);
-idx_norm_pca = cluster(gmfit,Xnorm_pca);
+idx_norm_pca = cluster(gmfit,Xnorm_pca(:,1:20));
 
 
 
@@ -128,7 +128,7 @@ obs_id = 100;
 c = zeros(numel(idx_temp),3);
 for i = 1:k%numel(idx_temp)
 %     c(i,:) = cmap(idx_temp(i),:);
-    Is = idx_temp==i & Y(:,5)==1;
+    Is = idx_temp==i; % & Y(:,5)==1;
     scatter3(Xtemp(Is,1), Xtemp(Is,2), Xtemp(Is,3),10,cmap(i,:)); hold on;
 end
 

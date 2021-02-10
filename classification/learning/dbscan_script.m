@@ -28,6 +28,10 @@ X_pca = X*coeff;
 Xnorm_pca = Xnorm*coeff_norm;
 
 %% DBSCAN
+
+% Conclusion: Not suitable to this data. Fundamentally, it clusters by
+% spatial distance among the points, and tends to suffer for higher
+% dimensional data (more than 3).
 rng(2);
 
 minpts = 70;
@@ -35,10 +39,10 @@ epsilon = 1.5;
 
 
 [idx,COREPTS] = dbscan(X,epsilon, minpts);
-[idx_norm,COREPTS] = dbscan(Xnorm,epsilon, minpts);
+[idx_norm,COREPTS] = dbscan(Xnorm(:,1:3),epsilon, minpts);
 
 [idx_pca,COREPTS] = dbscan(X_pca,epsilon, minpts);
-[idx_norm_pca,COREPTS] = dbscan(Xnorm_pca,epsilon, minpts);
+[idx_norm_pca,COREPTS] = dbscan(Xnorm_pca(:,1:3),epsilon, minpts);
 
 
 %% 

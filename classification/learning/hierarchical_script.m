@@ -31,10 +31,10 @@ Xnorm_pca = Xnorm*coeff_norm;
 %% Linkage
 
 rng(2);
-k = 6;
+k = 2;
 
-Z = linkage(Xnorm_pca(:,1:10));
-idx_norm_pca = cluster(Z,'maxclust',6);
+Z = linkage(Xnorm_pca(:,1:40));
+idx_norm_pca = cluster(Z,'maxclust',k);
 
 cutoff = median([Z(end-2,3) Z(end-1,3)]);
 dendrogram(Z,'ColorThreshold',cutoff)
