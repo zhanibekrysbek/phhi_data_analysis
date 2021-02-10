@@ -9,25 +9,36 @@ function [X,Y] = extractSWFeatures(observations_processed,option)
 
 
 
-global wind_size stride divisions opt;
+global wind_size stride divisions opt numHapticSignals numSignals;
 
 wind_size = 0.05;
 stride = 0.02;
 divisions = 5;
 opt = option; % Option for feature data
+numSignals = 28; % number of signals
+numHapticSignals = 30;
+
+if option == 3
+   hfeatures = haptic_features(observations_processed);
+   numSignals = 58;
+end
 
 Nwinds = ceil((1 - wind_size)/stride);
 
-X = zeros(Nwinds*numel(observations_processed), divisions*28);
+X = zeros(Nwinds*numel(observations_processed), divisions*numSignals);
 Y = zeros(Nwinds*numel(observations_processed), 5);
 
 for ind=progress(1:numel(observations_processed), 'Title', 'ExtractingSWFeatures')
+    
     obs = observations_processed(ind);
+    if option == 3
+       obs.haptics = hfeatures(ind).haptics;
+    end
     
     [X((ind-1)*Nwinds+1:ind*Nwinds,:), Y((ind-1)*Nwinds+1:ind*Nwinds,3:end)] = ...
         sliding_window(obs);
+      
     Y((ind-1)*Nwinds+1:ind*Nwinds,1) = ind; % obs_id
-    
     
     % Identify Initial location (Table A or Table B)
     obs_id_num = split(obs.obs_id,'_');
@@ -50,21 +61,20 @@ end
 % Sliding Window Mechanism to traverse the observation data one by one
 function [X, Y] = sliding_window(obs)
 
-global wind_size stride divisions;
+global wind_size stride divisions numSignals;
 
 t0 = 0;
 Nwinds = ceil((1 - wind_size)/stride);
 
+
 % Create Label Vector
 Y = get_labels(obs, Nwinds);
-X = zeros(Nwinds, divisions*28);
+X = zeros(Nwinds, divisions*numSignals);
 
 for ind = 1:Nwinds
     tf = t0 + wind_size;
-    
     % feature types are implemented in modular fashion
     X(ind,:) = get_features(obs,t0,tf); 
-        
     t0 = t0 + stride;
 end
 
@@ -73,7 +83,7 @@ end
 
 function feats = get_features(obs, t0, tf)
 
-global opt;
+global opt divisions numHapticSignals;
 
 switch opt
     case 1
@@ -90,14 +100,11 @@ switch opt
         % Total torque
         tor1 = obs.rft1.ttorque(Irft,:);
         tor2 = obs.rft2.ttorque(Irft,:);
-
         % Pose
         pos = obs.pose123.position(Ipos,:);
         orient = obs.imu.orientation(Ipos,:);
-
         % Linear Acceleration
         accel = obs.imu.pureAccel(Iimu,:);
-
         % Twist
         tw = obs.pose123.twistB(Ipos,:);
 
@@ -155,6 +162,55 @@ switch opt
         
         % Compile them together and output
         feats = [f1_v tor1_v f2_v tor2_v pos_v orient_v tw_v accel_v ];
+        
+    case 3
+        % Haptic features and Signals in Body frame (as in case 1 )
+        
+        % Get the signal for specified window [t0,tf]
+        Irft = obs.rft1.tnorm <= tf & obs.rft1.tnorm >= t0;
+        Ipos = obs.pose123.tnorm <= tf & obs.pose123.tnorm >= t0;
+        Iimu = obs.imu.tnorm <= tf & obs.imu.tnorm >= t0;
+
+        % Force Torque
+        f1 = obs.rft1.force(Irft,:);
+        f2 = obs.rft2.force(Irft,:);
+        % Total torque
+        tor1 = obs.rft1.ttorque(Irft,:);
+        tor2 = obs.rft2.ttorque(Irft,:);
+        % Pose
+        pos = obs.pose123.position(Ipos,:);
+        orient = obs.imu.orientation(Ipos,:);
+        % Linear Acceleration
+        accel = obs.imu.pureAccel(Iimu,:);
+        % Twist
+        tw = obs.pose123.twistB(Ipos,:);
+
+        % Get the means per window for listed signals
+        f1_v = extract_means(f1);
+        f2_v = extract_means(f2);
+        tor1_v = extract_means(tor1);
+        tor2_v = extract_means(tor2);
+
+        pos_v = extract_means(pos);
+        orient_v = extract_means(orient);
+
+        accel_v = extract_means(accel);
+        tw_v = extract_means(tw);
+        
+        % Compile them together and output
+        feats = [f1_v tor1_v f2_v tor2_v pos_v orient_v tw_v accel_v ];
+        
+        hfeats = zeros(1, divisions*numHapticSignals);
+        flds = fields(obs.haptics);
+        i = 1;
+        for ind=1:numel(flds)
+            if ~contains(flds{ind}, 'time_steps')
+                hpf = obs.haptics.(flds{ind})(Irft);
+                hfeats((i-1)*divisions+1 : i*divisions) = extract_means(hpf);
+                i = i + 1;
+            end
+        end
+        feats = [feats hfeats];
 end
 end
 

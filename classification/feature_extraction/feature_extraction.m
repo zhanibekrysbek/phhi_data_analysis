@@ -13,10 +13,10 @@ base_path = '../../data/preprocessed_v2_1';
 % figure(1);
 % plot_rfts(obs, 2);
 
-ax = [1,2];
 
 features(numel(observations_processed)) = struct('haptics',[], 'motion_type',[],...
             'obs_id',[], 'traj_type', []);
+        
 % profile on;
 for i=progress(1:numel(features), 'Title','FeatureExtraction')
     
