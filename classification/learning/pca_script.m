@@ -1,5 +1,5 @@
 
-clc;clear;
+clc;clear;close all;
 base_path = '../../data/preprocessed_v2_1';
 
 [observations_processed,tb] = load_data(base_path);
@@ -8,7 +8,7 @@ base_path = '../../data/preprocessed_v2_1';
 feature_inds = [0,30, 60, 95, 125];
 feature_names = {'rft1', 'rft2', 'pose', 'twist', 'accel'};
 
-data_version = {'body_frame', 'spatial_frame', 'body_n_haptics'};
+data_version = {'body_frame', 'spatial_frame', 'body_n_haptics', 'spatial_n_haptics', 'haptics'};
 norm_option = {'unnormalized','normalized'};
 
 %% Load Features
@@ -20,7 +20,6 @@ data_option = 3;
 
 % Normalize
 Xnorm = 2*(X-min(X))./(max(X)-min(X))-1;
-% Xnorm = (X-mean(X))./std(X);
 
 % PCA
 [coeff,score,latent] = pca(X);
@@ -39,7 +38,7 @@ grid on;
 
 figure(32);
 boxplot(Xnorm_pca(:,I))
-title('normalized')
+title('PCA normalized')
 grid on;
 
 %% Information Content by Components
@@ -104,7 +103,7 @@ for tonorm = 1:2
             xline(feature_inds(j),'-.b', feature_names{j},....
                 'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal');
         end
-        xticks(sort([0:15:75, 95, 110, 125, 140]))
+        xticks(sort([0:15:75, 95, 110, 125, 140:5:N]))
 
         ylim([-0.5, 0.5]);
     end
@@ -137,7 +136,7 @@ for tonorm = 1:2
     sgtitle(sprintf('PCA space %s %s', norm_option{tonorm}, data_version{data_option}), 'Interpreter','None');
 
     fig_path = ['../../data/plots/clustering/',data_version{data_option}];
-    exportgraphics(gcf, [fig_path, '/pca_space_',data_version{data_option},'_',norm_option{tonorm}, '.jpg'], 'Resolution', 300)
+%     exportgraphics(gcf, [fig_path, '/pca_space_',data_version{data_option},'_',norm_option{tonorm}, '.jpg'], 'Resolution', 300)
 
 end
 

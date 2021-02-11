@@ -46,14 +46,15 @@ a = polyfit(P(:,1),P(:,2),1);
 I1 = Xnorm_pca(:,3) - Xnorm_pca(:,2)*a(1) - a(2) > 0;
 
 idx_norm_pca = zeros(size(X,1),1);
-% idx_norm_pca(I1) = 1;
-% idx_norm_pca(~I1) = 2;
+idx_norm_pca(I1) = 1;
+idx_norm_pca(~I1) = 2;
 
 % Focus on the body
 X1 = X(I1,:);
 Y1 = Y(I1,:);
+Xnorm_pca = Xnorm_pca(I1,:);
 
-% Separation line X(:,[1,3]) plane 
+%% Separation line X(:,[1,3]) plane 
 p1 = [-1.918, 0.75];
 p2 = [1.94, 1.328];
 P = [p1;p2];

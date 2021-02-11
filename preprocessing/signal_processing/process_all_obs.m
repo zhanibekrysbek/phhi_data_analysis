@@ -43,6 +43,7 @@ end
 
 
 %% Plot a dozen of samples for ArUco Pose Filtering
+
 for i=progress(21:23)
     obs = observations_processed(i);
     obs2 = observations(i);
