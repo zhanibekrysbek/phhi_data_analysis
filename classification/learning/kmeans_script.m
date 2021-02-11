@@ -5,17 +5,20 @@ base_path = '../../data/preprocessed_v2_1';
 [observations_processed,tb] = load_data(base_path);
 
 %% Customization
-feature_inds = [0,30, 60, 95, 125];
+feature_inds = [0, 30, 60, 95, 125];
 feature_names = {'rft1', 'rft2', 'pose', 'twist', 'accel'};
 
-data_version = {'body_frame', 'spatial_frame'};
+data_version = {'body_frame', 'spatial_frame', 'body_n_haptics'};
 norm_option = {'unnormalized','normalized'};
 
 %% Load Features
 
+pca_components = [140, 40, 60];
+
 data_option = 1;
 
 [X,Y] = extractSWFeatures(observations_processed, data_option);
+[N, numFeats] = size(X);
 
 % Normalize
 Xnorm = 2*(X-min(X))./(max(X)-min(X))-1;
@@ -27,16 +30,18 @@ Xnorm = 2*(X-min(X))./(max(X)-min(X))-1;
 X_pca = X*coeff;
 Xnorm_pca = Xnorm*coeff_norm;
 
+ncomponents = pca_components(data_option);
+
 %% Kmeans
 rng(2);
 
-k = 6;
+k = 9;
 
 [idx,C,sumd,D] = kmeans(X,k);
 [idx_norm,C_norm,sumd_norm,D_norm] = kmeans(Xnorm,k);
 
 [idx_pca,C_pca,sumd,D] = kmeans(X_pca(:,1:10),k);
-[idx_norm_pca,C_norm_pca,sumd_norm,D_norm] = kmeans(Xnorm_pca(:,1:20),k);
+[idx_norm_pca,C_norm_pca,sumd_norm,D_norm] = kmeans(Xnorm_pca(:,1:80),k);
 
 
 %% 
@@ -118,9 +123,9 @@ cmap = hsv(k);
 
 obs_id = 100;
 c = zeros(numel(idx_temp),3);
-for i = 1:k%numel(idx_temp)
-%     c(i,:) = cmap(idx_temp(i),:);
-    Is = idx_temp==i & Y(:,5)==1;
+for i =  1:k%numel(idx_temp)
+    c(i,:) = cmap(idx_temp(i),:);
+    Is = idx_temp==i;
     scatter3(Xtemp(Is,1), Xtemp(Is,2), Xtemp(Is,3),10,cmap(i,:)); hold on;
 end
 
@@ -135,7 +140,7 @@ legend(num2str([1:k]'));
 
 %% Per observation
 
-obs_id = 10;
+obs_id = 15;
 obs = observations_processed(obs_id);
 
 I = Y(:,1) == obs_id;
@@ -146,6 +151,7 @@ xlabel('normalized time');
 ylabel('cluster group')
 title(sprintf('%s %s %s', obs.motion_type, obs.traj_type, obs.obs_id),...
     'Interpreter', 'none')
+ylim([1,k])
 
 
 %% PCA Manual cluster

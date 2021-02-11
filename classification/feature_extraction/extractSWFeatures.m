@@ -11,16 +11,18 @@ function [X,Y] = extractSWFeatures(observations_processed,option)
 
 global wind_size stride divisions opt numHapticSignals numSignals;
 
-wind_size = 0.05;
-stride = 0.02;
+wind_size = 0.03;
+stride = 0.01;
 divisions = 5;
-opt = option; % Option for feature data
-numSignals = 28; % number of signals
-numHapticSignals = 30;
 
-if option == 3
+opt = option; % Option for feature data
+opt2numsig = [28, 28, 58, 58, 30]; % number of signals
+
+numSignals = opt2numsig(opt); % number of signals
+numHapticSignals = 30; % number of Haptic signals
+
+if opt >= 3
    hfeatures = haptic_features(observations_processed);
-   numSignals = 58;
 end
 
 Nwinds = ceil((1 - wind_size)/stride);
@@ -31,7 +33,7 @@ Y = zeros(Nwinds*numel(observations_processed), 5);
 for ind=progress(1:numel(observations_processed), 'Title', 'ExtractingSWFeatures')
     
     obs = observations_processed(ind);
-    if option == 3
+    if opt >= 3
        obs.haptics = hfeatures(ind).haptics;
     end
     
@@ -211,6 +213,73 @@ switch opt
             end
         end
         feats = [feats hfeats];
+        
+    case 4
+        % Haptic features and Signals in Spatial frame (as in case 1 )
+        
+        % Get the signal for specified window [t0,tf]
+        Irft = obs.rft1.tnorm <= tf & obs.rft1.tnorm >= t0;
+        Ipos = obs.pose123.tnorm <= tf & obs.pose123.tnorm >= t0;
+        Iimu = obs.imu.tnorm <= tf & obs.imu.tnorm >= t0;
+
+        % Force Torque
+        f1 = obs.rft1.forceS(Irft,:);
+        f2 = obs.rft2.forceS(Irft,:);
+        % Total torque
+        tor1 = obs.rft1.ttorqueS(Irft,:); 
+        tor2 = obs.rft2.ttorqueS(Irft,:);
+        % Pose
+        pos = obs.pose123.position(Ipos,:);
+        orient = obs.imu.orientation(Ipos,:);
+        % Linear Acceleration
+        accel = obs.imu.pureAccelS(Iimu,:);
+        % Twist
+        tw = obs.pose123.twistS(Ipos,:);
+
+        % Get the means per window for listed signals
+        f1_v = extract_means(f1);
+        f2_v = extract_means(f2);
+        tor1_v = extract_means(tor1);
+        tor2_v = extract_means(tor2);
+
+        pos_v = extract_means(pos);
+        orient_v = extract_means(orient);
+
+        accel_v = extract_means(accel);
+        tw_v = extract_means(tw);
+        
+        % Compile them together and output
+        feats = [f1_v tor1_v f2_v tor2_v pos_v orient_v tw_v accel_v ];
+        
+        hfeats = zeros(1, divisions*numHapticSignals);
+        flds = fields(obs.haptics);
+        i = 1;
+        for ind=1:numel(flds)
+            if ~contains(flds{ind}, 'time_steps')
+                hpf = obs.haptics.(flds{ind})(Irft);
+                hfeats((i-1)*divisions+1 : i*divisions) = extract_means(hpf);
+                i = i + 1;
+            end
+        end
+        feats = [feats hfeats];
+        
+    case 5
+        % Pure Haptic Signals
+        
+        % Get the signal for specified window [t0,tf]
+        Irft = obs.rft1.tnorm <= tf & obs.rft1.tnorm >= t0;
+        
+        feats = zeros(1, divisions*numHapticSignals);
+        flds = fields(obs.haptics);
+        i = 1;
+        for ind=1:numel(flds)
+            if ~contains(flds{ind}, 'time_steps')
+                hpf = obs.haptics.(flds{ind})(Irft);
+                feats((i-1)*divisions+1 : i*divisions) = extract_means(hpf);
+                i = i + 1;
+            end
+        end
+        
 end
 end
 
