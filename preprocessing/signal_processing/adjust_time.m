@@ -10,7 +10,6 @@ for ind = progress(1:numel(observations_processed), 'Title', 'Adjusting Time')
     
     obs = fix_imu_delay(obs);
 
-    
     if strcmp(obs.obs_id, 'Zhanibek_Sanket_2')
         obs = shift_time(obs, .5, 3.5);
     elseif strcmp(obs.obs_id, 'Sanket_Vignesh_2_19')

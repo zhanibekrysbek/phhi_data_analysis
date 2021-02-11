@@ -1,10 +1,11 @@
 function [observations,tb] = load_data(base_path)
 %load_data Summary of this function goes here
 %   Detailed explanation goes here
-
+    
+    Nobs = 112;
     files = dir(base_path);
 
-    observations(112) = struct();
+    observations(Nobs) = struct();
     ind = 1;
     for i=progress(1:numel(files), 'Title', 'Loading')
         f = files(i);
@@ -15,6 +16,7 @@ function [observations,tb] = load_data(base_path)
             for fn=1:numel(fns)
                 observations(ind).(fns{fn}) = ld.(fns{fn});
             end
+            observations(ind).duration = observations(ind).rft1.time_steps(end);
             ind = ind+1;
         end
     end
