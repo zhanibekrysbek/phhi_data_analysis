@@ -151,7 +151,8 @@ switch opt
 
 
         subplot(2,2,4)
-        fxy = vecnorm(obs.fstretch.forceS(:,1:2),2,2);
+%         fxy = vecnorm(obs.fstretch.forceS(:,1:2),2,2);
+        fxy = obs.fstretch.force(:,1:2); % use only Fstretch along X-dir
         fxy = fxy(1:10:end,:);
         plot(obs.pose123.position(:,1), fxy, 'LineWidth',1.5);
 
@@ -173,6 +174,7 @@ switch opt
     
     
     case 4
+        
         subplot(2,2,1)
         plot(obs.pose123.position(:,1), obs.pose123.position(:,2), 'LineWidth',1.5);
         grid on; axis equal; box on;

@@ -96,6 +96,7 @@ for ind=progress(1:numel(observations_processed), 'Title', 'PhasePlot')
 
 end
 
+
 %% IMU Plot
 
 fig_path = '../../data/plots/plots_preprocessed_v2_1/imu/';
