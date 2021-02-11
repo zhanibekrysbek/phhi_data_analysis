@@ -2,8 +2,8 @@
 
 %% Load the data
 
-clc;clear;
-base_path = '../../data/preprocessed_v2';
+clc;clear;close all;
+base_path = '../../data/preprocessed_v2_1';
 
 
 [observations,tb] = load_data(base_path);
@@ -269,5 +269,44 @@ title('Parallel vs Serial for "AB2"')
 % subtitle('AB1 vs AB2')
 
 sgtitle('Distribution')
+
+
+%% Duration summary
+
+
+BW = 0.5;
+
+figure(71);
+histogram(tb.duration, 'BinWidth', BW); grid on;
+subtitle('Overall Duration of observations')
+xlabel('time, sec')
+ylabel('counts')
+
+figure(72);
+subplot(1,2,1)
+histogram(tb(tb.motion_type=='parallel',:).duration, 'BinWidth', BW); grid on;
+xlabel('time, sec')
+ylabel('counts')
+subtitle('Parallel Movements')
+
+subplot(1,2,2)
+histogram(tb(tb.motion_type=='serial',:).duration, 'BinWidth', BW); grid on;
+xlabel('time, sec')
+% ylabel('counts')
+subtitle('Serial Movements')
+
+
+figure(73);
+subplot(1,2,1)
+histogram(tb(tb.traj_type=='AB1',:).duration, 'BinWidth', BW); grid on;
+xlabel('time, sec')
+ylabel('counts')
+subtitle('AB1 trajectory')
+
+subplot(1,2,2)
+histogram(tb(tb.traj_type=='AB2',:).duration, 'BinWidth', BW); grid on;
+xlabel('time, sec')
+% ylabel('counts')
+subtitle('AB2 trajectory')
 
 
