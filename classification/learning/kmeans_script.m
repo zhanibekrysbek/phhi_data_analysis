@@ -15,7 +15,7 @@ norm_option = {'unnormalized','normalized'};
 
 best_pca_components = [20, 20, 20, 20, 20];
 
-data_option = 1;
+data_option = 5;
 
 [X,Y] = extractSWFeatures(observations_processed, data_option);
 Nwinds = max(Y(:,3));
