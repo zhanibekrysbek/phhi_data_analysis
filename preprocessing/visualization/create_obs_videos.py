@@ -57,20 +57,20 @@ def create_video(tt0, ttf, temp_df, obs):
     if 'angetube' in temp_df.frame_id[0]:
         cam_id = 'camera_1'
         scale = 1.5
-        fps = 25
+        fps = 20
     elif 'logitech_t1' in temp_df.frame_id[0]:
         cam_id = 'camera_2'
         scale = 1.5
-        fps = 25
+        fps = 20
     elif 'logitech_t2' in temp_df.frame_id[0]:
         cam_id = 'camera_3'
         scale = 1.2
-        fps = 25
+        fps = 20
 
     cut = temp_df.time_stamp.apply(lambda x: x >= tt0 and x <= ttf)
     temp = temp_df[cut]
 
-    vidname = obs['obs_id'] + '_' + obs['traj_type'] + '_' + obs['motion_type'] + '.wmv'
+    vidname = obs['obs_id'] + '_' + obs['traj_type'] + '_' + obs['motion_type'] + '.avi'
     vidpath = os.path.join(base_path, cam_id, vidname)
 
 
@@ -164,3 +164,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
