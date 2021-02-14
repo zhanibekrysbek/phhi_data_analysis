@@ -1,16 +1,16 @@
-,,,,,,,,,,,
-,,Sanket,Vignesh,,1602532,,,,,,
-,AB1/AB2/BA1/BA2,parallel/serial,smooth/conflict,,,,,,,,
-,,,,,,,,,,,
-,,,,,,,,,,,
-,trajectory,motion type,negotiation,t0_cam_1_seq,t0_sec,tf_cam_1_seq,tf_sec,duration,t0_precise,tf_precise,duration_precise
-1,AB1,parallel,,26034,137,26540,152,15,141.4356,151.8323,10.3967
-2,BA1,parallel,,26745,159,27053,168,9,158.9674,168.4345,9.4671
-3,AB2,parallel,,27337,177,27602,185,8,178.1153,185.3048,7.1895
-4,BA1,parallel,,27681,187,28060,198,11,190.4292,198.9049,8.4757
-5,AB2,parallel,,28152,201,28402,208,7,201.4214,208.4606,7.0392
-6,BA2,parallel,,28480,211,28720,218,7,211.155,218.3324,7.1774
-7,AB2,parallel,,28806,221,29035,227,6,221.3946,227.7835,6.3889
-8,BA1,parallel,,29088,229,29400,238,9,229.8476,238.1753,8.3277
-9,AB2,parallel,,29583,243,29827,251,8,244.3838,250.8954,6.5116
-10,BA1,parallel,,30033,257,30274,265,8,257.9094,265.9505,8.0411
+,,,,,,,,,,,,,,,,,
+,,Sanket,Vignesh,,1602532,,,,,,,,,,,,
+,AB1/AB2/BA1/BA2,parallel/serial,smooth/conflict,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,
+,trajectory,motion type,random,t0_cam_1_seq,t0_sec,tf_cam_1_seq,tf_sec,duration,t0_precise,tf_precise,duration_precise,negotiation,tdec_sec,outcome,initialOrient,handle_1,handle_2
+1,AB1,parallel,,26034,137,26540,152,15,141.4356,151.8323,10.3967,,146.2,l1,xl,Sanket,Vignesh
+2,BA1,parallel,,26745,159,27053,168,9,158.9674,168.4345,9.4671,,162.18,r1,xr,Sanket,Vignesh
+3,AB2,parallel,,27337,177,27602,185,8,178.1153,185.3048,7.1895,,180.68,r2,xr,Sanket,Vignesh
+4,BA1,parallel,,27681,187,28060,198,11,190.4292,198.9049,8.4757,,192.71,r1,xr,Sanket,Vignesh
+5,AB2,parallel,,28152,201,28402,208,7,201.4214,208.4606,7.0392,,204.42,r2,xl,Sanket,Vignesh
+6,BA2,parallel,,28480,211,28720,218,7,211.155,218.3324,7.1774,,213.38,l2,xr,Sanket,Vignesh
+7,AB2,parallel,,28806,221,29035,227,6,221.3946,227.7835,6.3889,,223.65,r2,xl,Sanket,Vignesh
+8,BA1,parallel,,29088,229,29400,238,9,229.8476,238.1753,8.3277,,231.65,r1,xr,Sanket,Vignesh
+9,AB2,parallel,,29583,243,29827,251,8,244.3838,250.8954,6.5116,,247.87,r2,xl,Sanket,Vignesh
+10,BA1,parallel,,30033,257,30274,265,8,257.9094,265.9505,8.0411,,260.82,r1,xr,Sanket,Vignesh
