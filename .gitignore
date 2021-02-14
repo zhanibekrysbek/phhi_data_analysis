@@ -1,3 +1,7 @@
+data/preprocessed_v1
+data/preprocessed_v1_1
+data/preprocessed_v2
+data/preprocessed_v2_1
 preprocessing/signal_processing/*.asv
 preprocessing/signal_processing/ARCHIVE/
 preprocessing/signal_processing/.DS_Store
