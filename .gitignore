@@ -6,6 +6,6 @@ preprocessing/signal_processing/.DS_Store
 *.asv
 */*.asv
 */.ipynb_checkpoints
-preprocessing/notebooks/.ipynb_checkpoints
+*/*/.ipynb_checkpoints
 preprocessing/imu_calibration/ARCHIVE
 data/annotation/BAK
