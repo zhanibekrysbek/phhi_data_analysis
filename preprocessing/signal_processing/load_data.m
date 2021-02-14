@@ -22,7 +22,8 @@ function [observations,tb] = load_data(base_path)
     end
     
     tb = struct2table(observations);
-    tb = convertvars(tb, {'motion_type','traj_type', 'obs_id'}, 'string');
+    tb = convertvars(tb, {'motion_type','traj_type', 'obs_id', ...
+        'initialOrient', 'handle_1', 'handle_2', 'outcome'}, 'string');
     try
         tb = removevars(tb, {'pose123', 'imu', 'rft1', 'rft2', 'fsum', 'fstretch'});
     catch

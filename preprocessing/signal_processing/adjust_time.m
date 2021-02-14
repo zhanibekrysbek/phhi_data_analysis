@@ -41,6 +41,8 @@ function obs = shift_time(obs, offset0, offset1)
     
     tf = round(obs.rft1.time_steps(end)-offset1-0.005, 2)+eps;
     
+    obs.tdec_sec = obs.tdec_sec - t0;
+    
     I = obs.rft1.time_steps >= t0 & obs.rft1.time_steps <= tf;
 
     obs.rft1.time_steps = obs.rft1.time_steps(I) - t0;

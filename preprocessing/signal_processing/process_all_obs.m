@@ -3,7 +3,7 @@
 %% Load the data
 
 clc;clear;
-base_path = '../../data/preprocessed_v1_1';
+base_path = '../../data/preprocessed_v1_2';
 
 [observations, tb] = load_data(base_path);
 
@@ -11,8 +11,10 @@ base_path = '../../data/preprocessed_v1_1';
 %% Preprocess RFT and Pose
 
 obsNum = numel(observations);
-observations_processed(obsNum) = struct('pose123',[], 'motion_type',[],...
-            'obs_id',[], 'imu',[], 'traj_type', [], 'rft1',[], 'rft2',[], 'fsum',[], 'fstretch',[]);
+observations_processed(obsNum) = struct('pose123',[], 'initialOrient', [], ...
+    'motion_type',[], 'obs_id',[], 'imu',[], 'traj_type', [], 'rft1', [], 'rft2', [], ...
+    'fsum', [], 'fstretch', [], 'handle_1', [], 'handle_2', [], ...
+    'outcome', [], 'tdec_sec', [], 'duration', []);
 % profile on;
 for i=progress(1:obsNum)%numel(observations_processed), 'Title','Preprocessing')
     
@@ -34,7 +36,7 @@ observations_imufilt = imu_orient_tracking(observations_processed);
 
 
 %% Save the data 1 by 1. GitHub has a strict limit to file size 100MB
-base_path = '../../data/preprocessed_v2_1/';
+base_path = '../../data/preprocessed_v2_2/';
 
 for i=progress(1:numel(observations_imufilt), 'Title', 'Saving the data')
     obs = observations_imufilt(i);
