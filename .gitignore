@@ -8,3 +8,4 @@ preprocessing/signal_processing/.DS_Store
 */.ipynb_checkpoints
 preprocessing/notebooks/.ipynb_checkpoints
 preprocessing/imu_calibration/ARCHIVE
+data/annotation/BAK
