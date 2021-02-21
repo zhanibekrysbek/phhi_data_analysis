@@ -23,11 +23,12 @@ end
 
 function feat = get_indices(feat,obs)
 
-axs = [1, 2;
-       1, 3;
-       2, 3];
+% axs = [1, 2;
+%        1, 3;
+%        2, 3];
+axs = [1, 2];
 
-for i=1:length(axs)
+for i=1:height(axs)
     feat = force_components(feat, obs, axs(i,:));
     feat = torque_components(feat, obs, axs(i,:));
 end
