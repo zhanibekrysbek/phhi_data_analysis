@@ -1,10 +1,9 @@
 
 
 % clc;clear;
-base_path = '../../data/preprocessed_v2_1';
+base_path = '../../data/preprocessed_v2_2';
 
 [observations_processed,tb] = load_data(base_path);
-% observations_processed = adjust_time(observations);
 
 %% Force Plots
 fig_path = '../../data/plots/plots_preprocessed_v2_1/force/';
@@ -34,6 +33,10 @@ for ind=progress(1:numel(observations_processed), 'Title', 'Kinematics_Stretch')
     
     plot_pose(obs,3)
     saveas(gcf, [fig_path,'fstretch/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'kinematics_orient', '.jpg'])
+    
+    plot_pose(obs,4)
+    saveas(gcf, [fig_path,'mix_plot/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'kinematics_orient', '.jpg'])
+    
     
 end
 
@@ -136,7 +139,8 @@ figure('visible','on');
 
 %%
 
-obs = observations_processed(3);
+obs = observations_processed(30);
+% obs.tdec_sec = obs.tdec_sec - 1;
 
 % figure(1)
 % plot_phase(obs,1);
@@ -146,7 +150,14 @@ obs = observations_processed(3);
 % plot_imu(obs,1);
 
 figure(4);
-plot_imu(obs,4)
+trajvector_plot(obs,1)
+
+figure(5);
+plot_pose(obs,4)
+
+figure(6);
+plot_rfts(obs,2)
+
 
 
 
