@@ -1,6 +1,6 @@
 
 clc;clear;close all;
-base_path = '../../data/preprocessed_v2_1';
+base_path = '../../data/preprocessed_v2_2';
 
 [observations_processed,tb] = load_data(base_path);
 
@@ -13,7 +13,7 @@ norm_option = {'unnormalized','normalized'};
 
 %% Load Features
 
-best_pca_components = [20, 20, 20, 20, 20];
+best_pca_components = [20, 20, 20, 20, 10];
 
 data_option = 5;
 
@@ -31,7 +31,7 @@ Xnorm_pca = Xnorm*coeff_norm;
 ncomponents = best_pca_components(data_option);
 
 % First p percent of interaction
-Iint = Y(:,3)/Nwinds < 0.6;
+Iint = Y(:,3)/Nwinds <= 1;
 Xnorm_pca = Xnorm_pca(Iint,:);
 Y = Y(Iint,:);
 

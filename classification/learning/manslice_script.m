@@ -1,6 +1,6 @@
 
 clc;clear;
-base_path = '../../data/preprocessed_v2_1';
+base_path = '../../data/preprocessed_v2_2';
 
 [observations_processed,tb] = load_data(base_path);
 
