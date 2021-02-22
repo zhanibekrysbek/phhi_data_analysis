@@ -2,6 +2,10 @@ function [observations,tb] = load_data(base_path)
 %load_data Summary of this function goes here
 %   Detailed explanation goes here
     
+    if(exist(base_path)==0)
+        error('Incorrect data path is provided');
+    end
+
     global M
     
     subjectID = cell({'KOH'; 'Sanket'; 'Vignesh'; 'Zhanibek'});
@@ -24,6 +28,7 @@ function [observations,tb] = load_data(base_path)
             observations(ind).duration = observations(ind).rft1.time_steps(end);
             observations(ind).outcomeSubject = getOutcomeSubject(observations(ind));
             observations(ind).pos_dec = getPosXdecision(observations(ind));
+            observations(ind).tdec_sec = round(observations(ind).tdec_sec,2);
             
             ind = ind+1;
         end

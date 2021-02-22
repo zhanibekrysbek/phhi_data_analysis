@@ -1,19 +1,22 @@
 
 clc;clear;close all;
-base_path = '../../data/preprocessed_v2_1';
+base_path = '../../data/preprocessed_v2_2';
 
 [observations_processed,tb] = load_data(base_path);
 
 %% Customization
 feature_inds = [0,30, 60, 95, 125];
 feature_names = {'rft1', 'rft2', 'pose', 'twist', 'accel'};
+label_names = {'obs_id', 'starting_table', 'window_num', 'traj_type',...
+    'motion_type', 'initialOrientation', 'outcomeSubject'};
+label_maps = containers.Map(label_names, 1:numel(label_names));
 
 data_version = {'body_frame', 'spatial_frame', 'body_n_haptics', 'spatial_n_haptics', 'haptics'};
 norm_option = {'unnormalized','normalized'};
 
 %% Load Features
 
-data_option = 3;
+data_option = 2;
 
 [X,Y] = extractSWFeatures(observations_processed, data_option);
 [N, numFeats] = size(X);
@@ -118,10 +121,10 @@ for tonorm = 1:2
 end
 %% Plot principal components
 
-
-
 for tonorm = 1:2
+    
     figure(tonorm+5);
+    
     if tonorm==1
         Xtemp = X_pca;
     else
@@ -141,4 +144,29 @@ for tonorm = 1:2
 end
 
 
+
+%% Visualize outcomeSubject/traj_type/initialOrientation/motion_type
+
+idx_temp = Y(:, label_maps('traj_type'));
+
+k = numel(unique(idx_temp));
+
+Xtemp = Xnorm_pca;
+figure(13);
+cmap = hsv(k);
+
+obs_id = 100;
+c = zeros(numel(idx_temp),3);
+for i =  1:k % numel(idx_temp)
+    c(i,:) = cmap(idx_temp(i),:);
+    Is = idx_temp==i;
+    scatter3(Xtemp(Is,1), Xtemp(Is,2), Xtemp(Is,3),10,cmap(i,:)); hold on;
+end
+
+xlabel('Component 1')
+ylabel('Component 2')
+zlabel('Component 3')
+
+grid on; hold off;
+legend(num2str([1:k]'));
 
