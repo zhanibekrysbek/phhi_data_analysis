@@ -72,11 +72,14 @@ for ind=progress(1:numel(observations_processed), 'Title', 'TrajVectorPlot')
     
     obs = observations_processed(ind);
 
-    trajvector_plot(obs,1)
-    saveas(gcf, [fig_path, 'trajvector_spatial/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'trajVector_spatial', '.jpg'])
-    
-    trajvector_plot(obs,2)
-    saveas(gcf, [fig_path, 'trajvector_body/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'trajVector_body', '.jpg'])
+%     trajvector_plot(obs,1)
+%     saveas(gcf, [fig_path, 'trajvector_spatial/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'trajVector_spatial', '.jpg'])
+%     
+%     trajvector_plot(obs,2)
+%     saveas(gcf, [fig_path, 'trajvector_body/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'trajVector_body', '.jpg'])
+
+    trajvector_plot(obs,3)
+    saveas(gcf, [fig_path, 'trajvector_spatial_tdec/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'trajVector_body', '.jpg'])
 
 end
 
@@ -139,7 +142,7 @@ figure('visible','on');
 
 %%
 
-obs = observations_processed(30);
+obs = observations_processed(1);
 % obs.tdec_sec = obs.tdec_sec - 1;
 
 % figure(1)
@@ -150,13 +153,13 @@ obs = observations_processed(30);
 % plot_imu(obs,1);
 
 figure(4);
-trajvector_plot(obs,1)
+trajvector_plot(obs,3)
 
 figure(5);
 plot_pose(obs,4)
 
 figure(6);
-plot_rfts(obs,2)
+plot_rfts(obs,1)
 
 
 
