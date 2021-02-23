@@ -34,6 +34,9 @@ function [observations,tb] = load_data(base_path)
         end
     end
     
+    observations(48).tdec_sec = observations(48).tdec_sec - 0.7;
+    observations(48).pos_dec = getPosXdecision(observations(48));
+    
     tb = struct2table(observations);
     tb = convertvars(tb, {'motion_type','traj_type', 'obs_id', ...
         'initialOrient', 'handle_1', 'handle_2', 'outcome'}, 'string');
@@ -51,8 +54,7 @@ function [observations,tb] = load_data(base_path)
     tb(tb.obs_id=='KOH_Sanket_7',:).initialOrient = 'xl';
     tb(tb.obs_id=='Sanket_Vignesh_1_3',:).initialOrient = 'xl';
     
-    observations(48).tdec_sec = observations(48).tdec_sec - 0.7;
-    observations(48).pos_dec = getPosXdecision(observations(48));
+    
         
 end
 
