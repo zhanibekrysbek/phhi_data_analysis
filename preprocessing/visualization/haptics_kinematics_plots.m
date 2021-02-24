@@ -152,14 +152,14 @@ obs = observations_processed(1);
 % figure(3)
 % plot_imu(obs,1);
 
-figure(4);
-trajvector_plot(obs,3)
-
-figure(5);
-plot_pose(obs,4)
+% figure(4);
+% trajvector_plot(obs,3)
+% 
+% figure(5);
+% plot_pose(obs,4)
 
 figure(6);
-plot_rfts(obs,1)
+plot_rfts(obs,2)
 
 
 

@@ -6,7 +6,7 @@ switch opt
         plot(obs.rft1.time_steps,obs.rft1.force); hold on;
 %         plot(obs.rft1.time_steps, vecnorm(obs.rft1.force(:,1:2),2,2),'k--');
         hold off;
-        hL = legend({'x', 'y', 'z', '||xy||'},'Location','southwest','NumColumns',4);
+        hL = legend({'x', 'y', 'z'},'Location','southwest','NumColumns',4);
         xline(obs.tdec_sec,'-.b', 'td',...
                 'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
 
@@ -96,7 +96,7 @@ switch opt
         plot(obs.rft1.time_steps, obs.rft1.forceS); hold on;
 %         plot(obs.rft1.time_steps, vecnorm(obs.rft1.forceS(:,1:2),2,2),'k--'); 
         hold off;
-        hL = legend({'x', 'y', 'z', '||xy||'},'Location','southwest','NumColumns',4);
+        hL = legend({'x', 'y', 'z'},'Location','southwest','NumColumns',4);
         xline(obs.tdec_sec,'-.b', 'td',...
                 'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
 
