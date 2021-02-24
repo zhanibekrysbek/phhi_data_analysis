@@ -11,14 +11,14 @@ label_names = {'obs_id', 'starting_table', 'window_num', 'traj_type',...
     'motion_type', 'initialOrientation', 'outcomeSubject'};
 label_maps = containers.Map(label_names, 1:numel(label_names));
 
-data_version = {'body_frame', 'spatial_frame', 'body_n_haptics', 'spatial_n_haptics', 'haptics'};
+data_version = {'body_frame', 'spatial_frame', 'body_n_haptics', 'spatial_n_haptics', 'haptics', 'body_frame_td'};
 norm_option = {'unnormalized','normalized'};
 
 %% Load Features
 
-data_option = 2;
+data_option = 6;
 
-[X,Y] = extractSWFeatures(observations_processed, data_option);
+[X,Y] = extractSWFeatures(observations_processed, tb, data_option);
 [N, numFeats] = size(X);
 
 % Normalize
@@ -33,20 +33,25 @@ Xnorm_pca = Xnorm*coeff_norm;
 
 %% Box Plot of the data
 
-I = 1:5:numFeats;
+I = 1:numFeats;
 figure(31);
 boxplot(X(:,I))
 title('raw')
 grid on;
 
 figure(32);
+boxplot(Xnorm(:,I))
+title('raw')
+grid on;
+
+figure(33);
 boxplot(Xnorm_pca(:,I))
 title('PCA normalized')
 grid on;
 
 %% Information Content by Components
 
-latent_temp = latent_norm;
+latent_temp = [0; latent_norm];
 
 totVar = sum(latent_temp);
 latent_temp = latent_temp/totVar;
@@ -57,16 +62,16 @@ end
 
 figure(41);
 subplot(2,1,1)
-scatter(1:size(X,2), latent_temp, 'filled', 'blue'); hold on;
-p = plot(1:size(X,2), latent_temp, 'blue', 'LineWidth', 0.1);
+scatter(0:size(X,2), latent_temp, 'filled', 'blue'); hold on;
+p = plot(0:size(X,2), latent_temp, 'blue', 'LineWidth', 0.1);
 subtitle('Variance by Components')
 p.Color(4) = 0.2;
 hold off; box on;
 ylabel('variance')
 
 subplot(2,1,2)
-scatter(1:size(X,2), latent_integ, 'filled', 'red'); hold on;
-p = plot(1:size(X,2), latent_integ, 'red', 'LineWidth', 0.1);
+scatter(0:size(X,2), latent_integ, 'filled', 'red'); hold on;
+p = plot(0:size(X,2), latent_integ, 'red', 'LineWidth', 0.1);
 subtitle('Variance accumulated')
 p.Color(4) = 0.2;
 hold off; box on;
@@ -108,7 +113,7 @@ for tonorm = 1:2
         end
         xticks(sort([0:15:75, 95, 110, 125, 140:5:N]))
 
-        ylim([-0.5, 0.5]);
+        ylim([-1., 1.]);
     end
 
 

@@ -159,7 +159,7 @@ obs = observations_processed(1);
 % plot_pose(obs,4)
 
 figure(6);
-plot_rfts(obs,2)
+plot_rfts(obs,1)
 
 
 
