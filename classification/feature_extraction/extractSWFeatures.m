@@ -31,7 +31,7 @@ global wind_size stride divisions labelSize opt numHapticSignals numSignals;
 
 labelSize = 7; % maximum number of labels
 opt = option; % Option for feature data
-opt2numsig = [28, 28, 38, 38, 10, 29]; % number of signals
+opt2numsig = [28, 28, 38, 38, 10, 19, 19]; % number of signals
 
 numSignals = opt2numsig(opt); % number of signals
 numHapticSignals = 10; % number of Haptic signals
@@ -61,16 +61,31 @@ global Nwinds wind_size stride divisions opt numHapticSignals labelSize numSigna
 
 hfeatures = haptic_features(observations_processed);
 
-wind_size = 0.1;
-stride = 0.06;
-divisions = 1;
-
-tdec_sec = round(tb.tdec_sec,2);
-Nwinds_arr = ceil((tdec_sec - wind_size)/stride);
 
 
-X = zeros(sum(Nwinds_arr), divisions*numSignals);
-Y = zeros(sum(Nwinds_arr), labelSize);
+if opt==6
+    wind_size = 0.1;
+    stride = 0.03;
+    divisions = 1;
+    tdec_sec = round(tb.tdec_sec,2);
+    Nwinds_arr = ceil((tdec_sec - wind_size)/stride);
+    
+    X = zeros(sum(Nwinds_arr), divisions*numSignals);
+    Y = zeros(sum(Nwinds_arr), labelSize);
+elseif opt == 7
+    
+    wind_size = 0.05;
+    stride = 0.02;
+    divisions = 1;
+    
+    Nwinds = ceil((1 - wind_size)/stride);
+    Nwinds_arr = ones(numel(observations_processed),1)*Nwinds;
+    
+    X = zeros(Nwinds*numel(observations_processed), divisions*numSignals);
+    Y = zeros(Nwinds*numel(observations_processed), labelSize);
+end
+
+
 
 left = 1;
 
@@ -395,7 +410,7 @@ switch opt
         % Get the signal for specified window [t0,tf]
         Irft = obs.rft1.time_steps <= tf & obs.rft1.time_steps >= t0;
         Ipos = obs.pose123.time_steps <= tf & obs.pose123.time_steps >= t0;
-        Iimu = obs.imu.time_steps <= tf & obs.imu.time_steps >= t0;
+%         Iimu = obs.imu.time_steps <= tf & obs.imu.time_steps >= t0;
 
         % Force Torque
         f1 = obs.rft1.force(Irft,1:2);
@@ -438,8 +453,59 @@ switch opt
         
         % Compile them together and output
         feats = [f1_v tor1_v f2_v tor2_v fstretch_v fsum_v pos_v orient_v ...
-            tw_v angles_v integs_v];
+            tw_v  integs_v];
         
+    case 7
+        % Raw Signals in Body Frame (except position and orientation)
+        
+        trftnorm = obs.rft1.time_steps/obs.tdec_sec;
+        tposnorm = obs.pose123.time_steps/obs.tdec_sec;
+        % Get the signal for specified window [t0,tf]
+        Irft = trftnorm <= tf & trftnorm >= t0;
+        Ipos = tposnorm <= tf & tposnorm >= t0;
+
+        % Force Torque
+        f1 = obs.rft1.force(Irft,1:2);
+        f2 = obs.rft2.force(Irft,1:2);
+        fstretch = obs.fstretch.force(Irft, 1:2);
+        fsum = obs.fsum.force(Irft, :);
+        
+        % Total torque
+        tor1 = obs.rft1.ttorque(Irft,3);
+        tor2 = obs.rft2.ttorque(Irft,3);
+        
+        % Pose
+        pos = obs.pose123.position(Ipos,1:2);
+        
+        orient = rad2deg(obs.imu.orientation(Ipos,end));
+        orient = orient - orient(1);
+        
+        % Hfeatures
+        angles = obs.angles.angles(Ipos, :);
+        integs = obs.integs.integs(Ipos,:);
+        
+        % Twist
+        tw = obs.pose123.twistB(Ipos,[1,2,6]);
+
+        % Get the means per window for listed signals
+        f1_v = extract_means(f1);
+        f2_v = extract_means(f2);
+        fstretch_v = extract_means(fstretch);
+        fsum_v = extract_means(fsum);
+        tor1_v = extract_means(tor1);
+        tor2_v = extract_means(tor2);
+
+        pos_v = extract_means(pos);
+        orient_v = extract_means(orient);
+
+        tw_v = extract_means(tw);
+        
+        angles_v = extract_means(angles);
+        integs_v = extract_means(integs);
+        
+        % Compile them together and output
+        feats = [f1_v tor1_v f2_v tor2_v fstretch_v fsum_v pos_v orient_v ...
+            tw_v integs_v];
 end
 end
 
