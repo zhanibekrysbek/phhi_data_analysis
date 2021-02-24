@@ -61,11 +61,11 @@ def create_video(tt0, ttf, temp_df, obs):
     elif 'logitech_t1' in temp_df.frame_id[0]:
         cam_id = 'camera_2'
         scale = 1.5
-        fps = 20
+        fps = 30
     elif 'logitech_t2' in temp_df.frame_id[0]:
         cam_id = 'camera_3'
         scale = 1.2
-        fps = 20
+        fps = 30
 
     cut = temp_df.time_stamp.apply(lambda x: x >= tt0 and x <= ttf)
     temp = temp_df[cut]
@@ -124,9 +124,9 @@ def main():
         meta_data = pickle.load(open(meta_data_path, 'rb'), encoding='latin1')
 
         ann_df0 = pd.read_csv(ann_path)
-        ann_df0.columns = ['obs_num', 'trajectory_type', 'motion_type', 'negotiation', 't0_cam_1_seq',
+        ann_df0.columns = ['obs_num', 'trajectory_type', 'motion_type', 'random', 't0_cam_1_seq',
                            't0_sec', 'tf_cam_1_seq', 'tf_sec', 'duration', 't0_precise', 'tf_precise',
-                           'duration_precise']
+                           'duration_precise', 'negotiation', 'tdec_sec', 'outcome', 'initialOrient', 'handle_1', 'handle_2']
 
         time_offset = float(ann_df0['t0_sec'][0])*1000
         time_offset
