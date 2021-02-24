@@ -4,8 +4,11 @@ switch opt
         % Forces in Body Frame
         subplot(321);
         plot(obs.rft1.time_steps,obs.rft1.force); hold on;
-        plot(obs.rft1.time_steps, vecnorm(obs.rft1.force(:,1:2),2,2),'k--'); hold off;
-        hL = legend({'x', 'y', 'z', '||xy||'},'Location','southwest','NumColumns',4);
+%         plot(obs.rft1.time_steps, vecnorm(obs.rft1.force(:,1:2),2,2),'k--');
+        hold off;
+        hL = legend({'x', 'y', 'z'},'Location','southwest','NumColumns',4);
+        xline(obs.tdec_sec,'-.b', 'td',...
+                'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
 
 
         subtitle(sprintf('%s Force', obs.rft1.frame_id))
@@ -16,6 +19,9 @@ switch opt
         subplot(322);
         plot(obs.rft1.time_steps,obs.rft1.torque)
         subtitle(sprintf('%s Torque', obs.rft1.frame_id))
+        xline(obs.tdec_sec,'-.b', 'td',...
+                'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
+
         grid on;
         y2 = ylim;
         xlabel('time, s')
@@ -23,8 +29,12 @@ switch opt
 
         subplot(323);
         plot(obs.rft2.time_steps,obs.rft2.force); hold on;
-        plot(obs.rft2.time_steps, vecnorm(obs.rft2.force(:,1:2),2,2),'k--'); hold off;
+%         plot(obs.rft2.time_steps, vecnorm(obs.rft2.force(:,1:2),2,2),'k--'); 
+        hold off;
         subtitle(sprintf('%s Force', obs.rft2.frame_id))
+        xline(obs.tdec_sec,'-.b', 'td',...
+                'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
+
         grid on;
         y1 = [y1 ylim];
 
@@ -32,6 +42,9 @@ switch opt
         subplot(324);
         plot(obs.rft2.time_steps,obs.rft2.torque)
         subtitle(sprintf('%s Torque', obs.rft2.frame_id))
+        xline(obs.tdec_sec,'-.b', 'td',...
+                'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
+
         grid on;
         y2 = [y2 ylim];
         xlabel('time, s')
@@ -39,14 +52,22 @@ switch opt
 
         subplot(325);
         plot(obs.rft1.time_steps, obs.fsum.force(:,1:2)); hold on;
-        plot(obs.rft1.time_steps, vecnorm(obs.fsum.force(:,1:2),2,2), 'k--'); hold off;
+%         plot(obs.rft1.time_steps, vecnorm(obs.fsum.force(:,1:2),2,2), 'k--'); 
+        hold off;
+        xline(obs.tdec_sec,'-.b', 'td',...
+                'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
+
         grid on;
         subtitle('Force Sum');
 
 
         subplot(326);
         plot(obs.rft1.time_steps, obs.fstretch.force(:,1:2)); hold on;
-        plot(obs.rft1.time_steps, vecnorm(obs.fstretch.force(:,1:2),2,2), 'k--'); hold off
+%         plot(obs.rft1.time_steps, vecnorm(obs.fstretch.force(:,1:2),2,2), 'k--');
+        hold off
+        xline(obs.tdec_sec,'-.b', 'td',...
+                'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
+
         grid on;
         subtitle('F stretch');
 
@@ -73,8 +94,12 @@ switch opt
         % Forces are in Spatial Frame
         subplot(321);
         plot(obs.rft1.time_steps, obs.rft1.forceS); hold on;
-        plot(obs.rft1.time_steps, vecnorm(obs.rft1.forceS(:,1:2),2,2),'k--'); hold off;
-        hL = legend({'x', 'y', 'z', '||xy||'},'Location','southwest','NumColumns',4);
+%         plot(obs.rft1.time_steps, vecnorm(obs.rft1.forceS(:,1:2),2,2),'k--'); 
+        hold off;
+        hL = legend({'x', 'y', 'z'},'Location','southwest','NumColumns',4);
+        xline(obs.tdec_sec,'-.b', 'td',...
+                'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
+
 
 
         grid on;
@@ -82,31 +107,49 @@ switch opt
 
         subplot(322);
         plot(obs.rft1.time_steps, obs.rft1.torqueS);
+        xline(obs.tdec_sec,'-.b', 'td',....
+                'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
+
         grid on;
         subtitle('Torque 1 ');
 
         subplot(323);
         plot(obs.rft2.time_steps, obs.rft2.forceS); hold on;
-        plot(obs.rft2.time_steps, vecnorm(obs.rft2.forceS(:,1:2),2,2),'k--'); hold off;
+%         plot(obs.rft2.time_steps, vecnorm(obs.rft2.forceS(:,1:2),2,2),'k--'); 
+        hold off;
+        xline(obs.tdec_sec,'-.b', 'td',...
+                'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
+
         grid on;
         subtitle('Force 2 ');
 
 
         subplot(324);
         plot(obs.rft2.time_steps, obs.rft2.torqueS);
+        xline(obs.tdec_sec,'-.b', 'td',....
+                'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
+
         grid on;
         subtitle('Torque 2');
 
         subplot(325);
         plot(obs.rft1.time_steps, obs.fsum.forceS(:,1:2)); hold on;
-        plot(obs.rft1.time_steps, vecnorm(obs.fsum.forceS(:,1:2),2,2), 'k--'); hold off;
+%         plot(obs.rft1.time_steps, vecnorm(obs.fsum.forceS(:,1:2),2,2), 'k--'); 
+        hold off;
+        xline(obs.tdec_sec,'-.b', 'td',...
+                'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
+
         grid on;
         subtitle('Force Sum');
 
 
         subplot(326);
         plot(obs.rft1.time_steps, obs.fstretch.forceS(:,1:2)); hold on;
-        plot(obs.rft1.time_steps, vecnorm(obs.fstretch.forceS(:,1:2),2,2), 'k--'); hold off
+%         plot(obs.rft1.time_steps, vecnorm(obs.fstretch.forceS(:,1:2),2,2), 'k--');
+        hold off
+        xline(obs.tdec_sec,'-.b', 'td',...
+                'LabelHorizontalAlignment', 'center', 'LabelVerticalAlignment', 'bottom','LabelOrientation','horizontal')
+
         grid on;
         subtitle('F stretch');
 

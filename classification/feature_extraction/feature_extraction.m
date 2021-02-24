@@ -1,9 +1,8 @@
 
 clc;clear;
-base_path = '../../data/preprocessed_v2_1';
+base_path = '../../data/preprocessed_v2_2';
 
 [observations_processed,tb] = load_data(base_path);
-% observations_processed = adjust_time(observations_processed);
 
 
 %% Compute the features
@@ -241,21 +240,117 @@ plot3(Z1(Y==0,1),Z1(Y==0,2),Z1(Y==0,3), 'o'); hold on;
 plot3(Z1(Y==1,1),Z1(Y==1,2),Z1(Y==1,3), 'x'); hold off; grid on;
 
 
-%% Debugging Sliding Window
+%% Angle btwn F1 F2.
 
-obs = observations_processed(2);
+obs = observations_processed(3);
 
-wind_size = 0.05;
-stride = 0.02;
-divisions = 5;
+v = obs.pose123.linvel(:,[1,2]);
+f1 = obs.rft1.forceS(1:10:end,1:2);
+f2 = obs.rft2.forceS(1:10:end,1:2);
+fsum = obs.fsum.forceS(1:10:end,1:2);
+fstr = obs.fstretch.forceS(1:10:end,1:2);
 
-X = sliding_window(obs, wind_size, stride, divisions);
+theta1 = acosd(vecdot(f1,f2)./(vecnorm(f1,2,2).*vecnorm(f2,2,2)));
+theta2 = acosd(vecdot(f1,v)./(vecnorm(f1,2,2).*vecnorm(v,2,2)));
+theta3 = acosd(vecdot(f2,v)./(vecnorm(f2,2,2).*vecnorm(v,2,2)));
+theta4 = acosd(vecdot(fsum,v)./(vecnorm(fsum,2,2).*vecnorm(v,2,2)));
+theta5 = acosd(vecdot(fstr,v)./(vecnorm(fstr,2,2).*vecnorm(v,2,2)));
+theta6 = acosd(vecdot(f1,fsum)./(vecnorm(f1,2,2).*vecnorm(fsum,2,2)));
+theta7 = acosd(vecdot(f2,fsum)./(vecnorm(f2,2,2).*vecnorm(fsum,2,2)));
+theta8 = acosd(vecdot(fstr,fsum)./(vecnorm(fstr,2,2).*vecnorm(fsum,2,2)));
+theta9 = acosd(vecdot(f1,fstr)./(vecnorm(f1,2,2).*vecnorm(fstr,2,2)));
+theta10 = acosd(vecdot(f2,fstr)./(vecnorm(f2,2,2).*vecnorm(fstr,2,2)));
 
 
+Nsubs = 10;
+figure(1);
+subplot(Nsubs,1,1)
+plot(obs.pose123.time_steps, theta1);
+subtitle('f1 vs f2');
+xline(obs.tdec_sec)
+
+subplot(Nsubs,1,2)
+plot(obs.pose123.time_steps, theta2);
+subtitle('f1 vs v')
+
+subplot(Nsubs,1,3)
+plot(obs.pose123.time_steps, theta3);
+subtitle('f2 vs v')
+xline(obs.tdec_sec)
+
+subplot(Nsubs,1,4)
+plot(obs.pose123.time_steps, theta4);
+subtitle('fsum vs v')
+
+subplot(Nsubs,1,5)
+plot(obs.pose123.time_steps, theta5);
+subtitle('fstr vs v')
+xline(obs.tdec_sec)
+
+subplot(Nsubs,1,6)
+plot(obs.pose123.time_steps, theta6);
+subtitle('f1 vs fsum')
+xline(obs.tdec_sec)
+
+subplot(Nsubs,1,7)
+plot(obs.pose123.time_steps, theta7);
+subtitle('f2 vs fsum')
+
+subplot(Nsubs,1,8)
+plot(obs.pose123.time_steps, theta8);
+subtitle('fstr vs fsum')
+xline(obs.tdec_sec)
+
+subplot(Nsubs,1,9)
+plot(obs.pose123.time_steps, theta9);
+subtitle('f1 vs fstr')
+xline(obs.tdec_sec)
+
+subplot(Nsubs,1,10)
+plot(obs.pose123.time_steps, theta10);
+subtitle('f2 vs fstr')
+xline(obs.tdec_sec)
+
+figure(2);
+plot_rfts(obs,1);
 
 
+%% integration of Fstretch
 
 
+obs = observations_processed(3);
+
+f1 = obs.rft1.forceS(1:10:end,1);
+f2 = obs.rft2.forceS(1:10:end,1);
+fsum = obs.fsum.forceS(1:10:end,1:2);
+fstr = obs.fstretch.force(1:10:end,1);
+
+x = obs.pose123.position(:,1);
+y = obs.pose123.position(:,2);
+
+integx = cumtrapz(x,fstr);
+integt = cumtrapz(obs.pose123.time_steps,fstr);
+
+
+figure(3);
+
+subplot(221);
+plot(obs.pose123.time_steps, fstr); grid on;
+xline(obs.tdec_sec)
+
+subplot(223);
+plot(x, fstr); grid on;
+
+subplot(224);
+plot(obs.pose123.time_steps, integx); grid on;
+
+subplot(222);
+plot(obs.pose123.time_steps, integt); grid on;
+xline(obs.tdec_sec)
+
+
+figure(2);
+plot_rfts(obs,1);
 
 
 

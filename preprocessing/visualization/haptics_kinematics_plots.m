@@ -1,10 +1,9 @@
 
 
 % clc;clear;
-base_path = '../../data/preprocessed_v2_1';
+base_path = '../../data/preprocessed_v2_2';
 
 [observations_processed,tb] = load_data(base_path);
-% observations_processed = adjust_time(observations);
 
 %% Force Plots
 fig_path = '../../data/plots/plots_preprocessed_v2_1/force/';
@@ -34,6 +33,10 @@ for ind=progress(1:numel(observations_processed), 'Title', 'Kinematics_Stretch')
     
     plot_pose(obs,3)
     saveas(gcf, [fig_path,'fstretch/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'kinematics_orient', '.jpg'])
+    
+    plot_pose(obs,4)
+    saveas(gcf, [fig_path,'mix_plot/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'kinematics_orient', '.jpg'])
+    
     
 end
 
@@ -69,11 +72,14 @@ for ind=progress(1:numel(observations_processed), 'Title', 'TrajVectorPlot')
     
     obs = observations_processed(ind);
 
-    trajvector_plot(obs,1)
-    saveas(gcf, [fig_path, 'trajvector_spatial/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'trajVector_spatial', '.jpg'])
-    
-    trajvector_plot(obs,2)
-    saveas(gcf, [fig_path, 'trajvector_body/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'trajVector_body', '.jpg'])
+%     trajvector_plot(obs,1)
+%     saveas(gcf, [fig_path, 'trajvector_spatial/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'trajVector_spatial', '.jpg'])
+%     
+%     trajvector_plot(obs,2)
+%     saveas(gcf, [fig_path, 'trajvector_body/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'trajVector_body', '.jpg'])
+
+    trajvector_plot(obs,3)
+    saveas(gcf, [fig_path, 'trajvector_spatial_tdec/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'trajVector_body', '.jpg'])
 
 end
 
@@ -136,7 +142,8 @@ figure('visible','on');
 
 %%
 
-obs = observations_processed(3);
+obs = observations_processed(1);
+% obs.tdec_sec = obs.tdec_sec - 1;
 
 % figure(1)
 % plot_phase(obs,1);
@@ -145,8 +152,15 @@ obs = observations_processed(3);
 % figure(3)
 % plot_imu(obs,1);
 
-figure(4);
-plot_imu(obs,4)
+% figure(4);
+% trajvector_plot(obs,3)
+% 
+% figure(5);
+% plot_pose(obs,4)
+
+figure(6);
+plot_rfts(obs,1)
+
 
 
 

@@ -3,12 +3,10 @@
 %% Load the data
 
 clc;clear;close all;
-base_path = '../../data/preprocessed_v2_1';
-
+base_path = '../../data/preprocessed_v2_2';
 
 [observations,tb] = load_data(base_path);
-% tb = struct2table(observations);
-% tb = convertvars(tb, {'motion_type','traj_type', 'obs_id'}, 'string');
+
 
 %% 2D plot of all trajectories
 
@@ -308,5 +306,46 @@ histogram(tb(tb.traj_type=='AB2',:).duration, 'BinWidth', BW); grid on;
 xlabel('time, sec')
 % ylabel('counts')
 subtitle('AB2 trajectory')
+
+
+%% Decition Time
+
+BW = 0.5;
+
+figure(55);
+histogram(tb.tdec_sec, 'BinWidth', BW); grid on;
+xlim([0 9]);
+ylim([0 35]);
+
+figure(56);
+subplot(1,2,1);
+histogram(tb.tdec_sec(tb.traj_type=='AB1'), 'BinWidth', BW); grid on;
+subtitle('AB1 trajectory')
+xlim([0 9]);
+ylim([0 35]);
+
+subplot(1,2,2);
+histogram(tb.tdec_sec(tb.traj_type=='AB2'), 'BinWidth', BW); grid on;
+subtitle('AB2 trajectory')
+xlim([0 9]);
+ylim([0 35]);
+
+
+figure(57);
+subplot(1,2,1);
+histogram(tb.tdec_sec(tb.motion_type=='parallel'), 'BinWidth', BW); grid on;
+subtitle('Parallel Movement');
+xlim([0 9]);
+ylim([0 35]);
+
+subplot(1,2,2);
+histogram(tb.tdec_sec(tb.motion_type=='serial'), 'BinWidth', BW); grid on;
+subtitle('Serial Movement')
+xlim([0 9]);
+ylim([0 60]);
+
+%% 
+
+
 
 
