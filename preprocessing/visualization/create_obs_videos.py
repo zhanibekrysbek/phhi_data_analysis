@@ -126,7 +126,8 @@ def main():
         ann_df0 = pd.read_csv(ann_path)
         ann_df0.columns = ['obs_num', 'trajectory_type', 'motion_type', 'random', 't0_cam_1_seq',
                            't0_sec', 'tf_cam_1_seq', 'tf_sec', 'duration', 't0_precise', 'tf_precise',
-                           'duration_precise', 'negotiation', 'tdec_sec', 'outcome', 'initialOrient', 'handle_1', 'handle_2']
+                           'duration_precise', 'negotiation', 'tdec_sec', 'outcome', 'initialOrient', 
+                           'handle_1', 'handle_2', 'instant_decision', 'comments']
 
         time_offset = float(ann_df0['t0_sec'][0])*1000
         time_offset

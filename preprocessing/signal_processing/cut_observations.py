@@ -344,7 +344,8 @@ def main():
         ann_df0 = pd.read_csv(ann_path)
         ann_df0.columns = ['obs_num', 'trajectory_type', 'motion_type', 'random', 't0_cam_1_seq',
                         't0_sec', 'tf_cam_1_seq', 'tf_sec', 'duration', 't0_precise', 'tf_precise',
-                           'duration_precise', 'negotiation', 'tdec_sec', 'outcome', 'initialOrient', 'handle_1', 'handle_2']
+                           'duration_precise', 'negotiation', 'tdec_sec', 'outcome', 'initialOrient', 
+                           'handle_1', 'handle_2', 'instant_decision', 'comments']
 
         time_offset = float(ann_df0['t0_sec'][0])*1000
 
@@ -400,6 +401,7 @@ def main():
             # Get the label for observations
             traj_type = ann_df.trajectory_type[ann_df.obs_num == obs_num].iloc[0]
             motion_type = ann_df.motion_type[ann_df.obs_num == obs_num].iloc[0]
+            inst_dec = bool(ann_df.instant_decision[ann_df.obs_num == obs_num].iloc[0])
             
             outcome = ann_df.outcome[ann_df.obs_num == obs_num].iloc[0]
             initialOrient = ann_df.initialOrient[ann_df.obs_num == obs_num].iloc[0]
@@ -415,8 +417,8 @@ def main():
 
             obs = {'rft1': rft1, 'rft2': rft2, 'imu': imu, 'pose123': pos123,
                 'traj_type': traj_type, 'motion_type': motion_type, 'outcome':outcome, 
-                   'tdec_sec': tdec_sec, 'initialOrient': initialOrient, 'handle_1': handle_1,
-                'handle_2':handle_2, 'obs_id': trial_pair+'_'+str(obs_num)}
+                'tdec_sec': tdec_sec, 'initialOrient': initialOrient, 'handle_1': handle_1,
+                'handle_2': handle_2, 'inst_dec': inst_dec, 'obs_id': trial_pair+'_'+str(obs_num)}
 
             observations.append(obs)
 
