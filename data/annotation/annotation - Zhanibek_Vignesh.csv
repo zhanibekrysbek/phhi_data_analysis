@@ -1,28 +1,28 @@
-,,,,,,,,,,,,,,,,,
-,,Zhanibek,Vignesh,,1602532,,,,,,,,,,,,
-,AB1/AB2/BA1/BA2,parallel/serial,smooth/conflict,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,
-,trajectory,motion type,random,t0_cam_1_seq,t0_sec,tf_cam_1_seq,tf_sec,duration,t0_precise,tf_precise,duration_precise,negotiation,tdec_sec,outcome,initialOrient,handle_1,handle_2
-1,AB2,parallel,,43851,654,44139,662,8,654.0914,662.0966,8.0052,,656.81,r2,xl,Vignesh,Zhanibek
-2,BA1,parallel,,44306,667,44557,674,7,666.4174,674.8826,8.4652,,668.85,r1,xr,Vignesh,Zhanibek
-3,AB1,parallel,,44691,678,44970,685,7,678.3507,686.5751,8.2244,,681.18,l1,xl,Vignesh,Zhanibek
-4,BA2,serial,,45120,690,45418,699,9,690.2649,698.9333,8.6684,,694.32,l2,xr,Vignesh,Zhanibek
-5,AB2,parallel,,45538,702,45803,710,8,703.084,710.9676,7.8836,,705.88,r1,xr,Vignesh,Zhanibek
-6,BA1,serial,,45973,715,46225,722,7,714.7646,722.3136,7.549,,717.28,r2,xl,Vignesh,Zhanibek
-7,AB1,parallel,,46337,726,46588,734,8,725.8984,734.278,8.3796,,729.85,l1,xl,Vignesh,Zhanibek
-8,BA2,serial,,46695,737,46947,745,8,737.4032,744.9452,7.542,,739.62,l2,xr,Vignesh,Zhanibek
-9,AB1,parallel,,47032,747,47299,755,8,747.8066,755.7118,7.9052,,750.69,l2,xr,Vignesh,Zhanibek
-10,BA2,parallel,,47413,758,47644,765,7,758.7684,766.2661,7.4977,,761.5,l1,xl,Vignesh,Zhanibek
-11,AB1,serial,,47789,770,48041,778,8,769.7506,778.3257,8.5751,,771.92,l2,xr,Vignesh,Zhanibek
-12,BA2,serial,,48168,781,48402,789,8,781.8378,788.9895,7.1517,,783.75,l2,xr,Vignesh,Zhanibek
-13,AB1,serial,,48505,791,48756,799,8,791.8892,799.8079,7.9187,,794.88,l2,xr,Vignesh,Zhanibek
-14,BA2,serial,,48842,802,49079,808,6,802.3689,809.4579,7.089,,804.38,l2,xr,Vignesh,Zhanibek
-15,AB2,parallel,,49197,812,49412,818,6,812.2518,818.9923,6.7405,,814.48,r1,xr,Vignesh,Zhanibek
-16,BA1,parallel,,49526,822,49790,830,8,822.5464,830.3148,7.7684,,824.58,r2,xl,Vignesh,Zhanibek
-17,AB1,serial,,49903,833,50178,841,8,834.2201,841.4936,7.2735,,837.32,l2,xr,Vignesh,Zhanibek
-18,BA1,parallel,,50269,844,50514,851,7,844.4905,851.1506,6.6601,,846.91,r1,xr,Vignesh,Zhanibek
-19,AB2,serial,,50658,855,50895,863,8,855.7519,862.6738,6.9219,,858.35,r2,xl,Vignesh,Zhanibek
-20,BA2,parallel,,50990,866,51215,873,7,866.364,873.5159,7.1519,,868.88,l1,xl,Vignesh,Zhanibek
-21,AB2,parallel,,51372,877,51599,884,7,878.0614,884.8225,6.7611,,880.59,r1,xr,Vignesh,Zhanibek
-22,BA1,parallel,,51715,888,51972,895,7,887.7826,896.0844,8.3018,,889.72,r2,xl,Vignesh,Zhanibek
+,,,,,,,,,,,,,,,,,,,
+,,Zhanibek,Vignesh,,1602532,,,,,,,,,,,,,,
+,AB1/AB2/BA1/BA2,parallel/serial,smooth/conflict,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,trajectory,motion type,random,t0_cam_1_seq,t0_sec,tf_cam_1_seq,tf_sec,duration,t0_precise,tf_precise,duration_precise,negotiation,tdec_sec,outcome,initialOrient,handle_1,handle_2,instant_decision,comments
+1,AB2,parallel,,43851,654,44139,662,8,654.0914,662.0966,8.0052,,656.81,r2,xl,Vignesh,Zhanibek,0,
+2,BA1,parallel,,44306,667,44557,674,7,666.4174,674.8826,8.4652,,668.85,r1,xr,Vignesh,Zhanibek,1,
+3,AB1,parallel,,44691,678,44970,685,7,678.3507,686.5751,8.2244,,681.18,l1,xl,Vignesh,Zhanibek,0,
+4,BA2,serial,,45120,690,45418,699,9,690.2649,698.9333,8.6684,,694.32,l2,xr,Vignesh,Zhanibek,0,S2 changed mind
+5,AB2,parallel,,45538,702,45803,710,8,703.084,710.9676,7.8836,,705.88,r1,xr,Vignesh,Zhanibek,0,
+6,BA1,serial,,45973,715,46225,722,7,714.7646,722.3136,7.549,,717.28,r2,xl,Vignesh,Zhanibek,0,S1 wated
+7,AB1,parallel,,46337,726,46588,734,8,725.8984,734.278,8.3796,,729.85,l1,xl,Vignesh,Zhanibek,0,
+8,BA2,serial,,46695,737,46947,745,8,737.4032,744.9452,7.542,,739.62,l2,xr,Vignesh,Zhanibek,1,
+9,AB1,parallel,,47032,747,47299,755,8,747.8066,755.7118,7.9052,,750.69,l2,xr,Vignesh,Zhanibek,0,
+10,BA2,parallel,,47413,758,47644,765,7,758.7684,766.2661,7.4977,,761.5,l1,xl,Vignesh,Zhanibek,1,
+11,AB1,serial,,47789,770,48041,778,8,769.7506,778.3257,8.5751,,771.92,l2,xr,Vignesh,Zhanibek,1,
+12,BA2,serial,,48168,781,48402,789,8,781.8378,788.9895,7.1517,,783.75,l2,xr,Vignesh,Zhanibek,1,
+13,AB1,serial,,48505,791,48756,799,8,791.8892,799.8079,7.9187,,794.88,l2,xr,Vignesh,Zhanibek,0,
+14,BA2,serial,,48842,802,49079,808,6,802.3689,809.4579,7.089,,804.38,l2,xr,Vignesh,Zhanibek,1,
+15,AB2,parallel,,49197,812,49412,818,6,812.2518,818.9923,6.7405,,814.48,r1,xr,Vignesh,Zhanibek,1,
+16,BA1,parallel,,49526,822,49790,830,8,822.5464,830.3148,7.7684,,824.58,r2,xl,Vignesh,Zhanibek,1,
+17,AB1,serial,,49903,833,50178,841,8,834.2201,841.4936,7.2735,,837.32,l2,xr,Vignesh,Zhanibek,0,
+18,BA1,parallel,,50269,844,50514,851,7,844.4905,851.1506,6.6601,,846.91,r1,xr,Vignesh,Zhanibek,1,
+19,AB2,serial,,50658,855,50895,863,8,855.7519,862.6738,6.9219,,858.35,r2,xl,Vignesh,Zhanibek,1,
+20,BA2,parallel,,50990,866,51215,873,7,866.364,873.5159,7.1519,,868.88,l1,xl,Vignesh,Zhanibek,1,
+21,AB2,parallel,,51372,877,51599,884,7,878.0614,884.8225,6.7611,,880.59,r1,xr,Vignesh,Zhanibek,0,
+22,BA1,parallel,,51715,888,51972,895,7,887.7826,896.0844,8.3018,,889.72,r2,xl,Vignesh,Zhanibek,1,
