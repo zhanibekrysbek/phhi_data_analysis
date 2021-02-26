@@ -401,7 +401,7 @@ def main():
             # Get the label for observations
             traj_type = ann_df.trajectory_type[ann_df.obs_num == obs_num].iloc[0]
             motion_type = ann_df.motion_type[ann_df.obs_num == obs_num].iloc[0]
-            inst_dec = bool(ann_df.instant_decision[ann_df.obs_num == obs_num].iloc[0])
+            inst_dec = int(ann_df.instant_decision[ann_df.obs_num == obs_num].iloc[0])
             
             outcome = ann_df.outcome[ann_df.obs_num == obs_num].iloc[0]
             initialOrient = ann_df.initialOrient[ann_df.obs_num == obs_num].iloc[0]
