@@ -140,10 +140,49 @@ end
 figure('visible','on');
 
 
-%%
+%% Events
+fig_path = '../../data/plots/plots_preprocessed_v2_1/events/';
+% features = haptic_features(observations_processed);
 
-obs = observations_processed(1);
-% obs.tdec_sec = obs.tdec_sec - 1;
+st = struct2table(DetectedEvents);
+st = convertvars(st, {'obs_id'}, 'string');
+M = containers.Map(st.obs_id, st.events);
+
+figure('visible','off');
+for ind=progress(1:numel(observations_processed), 'Title', 'Events')
+
+    obs = observations_processed(ind);
+    feat = features(ind);
+    win_locs = M(obs.obs_id);
+    
+    plot_events(obs, feat, win_locs, 1)
+    saveas(gcf, [fig_path, '/mixplot/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'events', '.jpg'])
+    plot_events(obs, feat, win_locs, 2)
+    saveas(gcf, [fig_path, '/angles/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'events', '.jpg'])
+
+end
+figure('visible','on');
+
+%%
+% features = haptic_features(observations_processed);
+
+st = struct2table(DetectedEvents);
+st = convertvars(st, {'obs_id'}, 'string');
+M = containers.Map(st.obs_id, st.events);
+
+ind = 21;
+obs = observations_processed(ind);
+feat = features(ind);
+win_locs = M(obs.obs_id);
+
+
+figure(6);
+plot_events(obs, feat, win_locs, 1)
+
+figure(7);
+plot_events(obs, feat, win_locs, 2)
+
+
 
 % figure(1)
 % plot_phase(obs,1);
@@ -157,22 +196,6 @@ obs = observations_processed(1);
 % 
 % figure(5);
 % plot_pose(obs,4)
-
-figure(6);
-plot_rfts(obs,1)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
