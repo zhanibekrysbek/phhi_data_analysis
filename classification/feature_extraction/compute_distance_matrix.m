@@ -6,10 +6,14 @@ base_path = '../../data/preprocessed_v2_2';
 
 [observations_processed,tb] = load_data(base_path);
 
-load('../../data/events/DetectedEvents_0.25sec.mat');
+load('../../data/events/DetectedEvents_0.5sec.mat');
+
+DetectedEvents_original = DetectedEvents;
+DetectedEvents = event_correction(DetectedEvents, observations_processed);
 
 [features] = haptic_features(observations_processed);
-% 
+
+
 % st = struct2table(DetectedEvents);
 % st = convertvars(st, {'obs_id'}, 'string');
 % M = containers.Map(st.obs_id, st.events);
@@ -34,6 +38,8 @@ btable.fsum_max = max(primtable.fsum_max);
 btable.fsum_min = min(primtable.fsum_min);
 btable.angs_max = max(primtable.angs_max);
 btable.angs_min = min(primtable.angs_min);
+btable.ang_diff_max = max(primtable.ang_diff_max);
+btable.ang_diff_min = min(primtable.ang_diff_min);
 btable.vel_max = max(primtable.vmax);
 btable.vel_min = min(primtable.vmin);
 btable.angvel_max = max(primtable.angvel_max);
@@ -50,29 +56,94 @@ primitives_norm = normalize_primitives(primitives, btable);
 
 dist_mat = zeros(primNum,primNum);
 
+dist_mat_fstr = zeros(primNum,primNum);
+dist_mat_vel = zeros(primNum,primNum);
+dist_mat_ang = zeros(primNum,primNum);
+
 for ind1 = progress(1:primNum, 'Title', 'PrimDistanceMatrix')
     prim1 = primitives_norm(ind1).prim;
     
     for ind2 = ind1:primNum
         prim2 = primitives_norm(ind2).prim;
         dist = prim_distance(prim1, prim2);
+        
         dist_mat(ind1,ind2) = sum(dist);
+        dist_mat_fstr(ind1,ind2) = sum(dist(1));
+        dist_mat_vel(ind1, ind2) = sum(dist(7));
+        dist_mat_ang(ind1,ind2) = sum(dist(end));
     end
     
 end
 
-%%
 
 
-
-%% Kmediods
+%% Kmediods - Overall
 
 dist_mat_sym = dist_mat'+dist_mat;
 
-k = 7;
+k = 3;
 [inds,cidx] = kmedioids(dist_mat_sym,k);
 
 cidx
+
+idx_temp = inds;
+
+% idx_temp = idx_fstr;
+
+figure(36)
+histogram(inds)
+
+
+%% Kmediods - vel
+
+dist_mat_vel_sym = dist_mat_vel'+dist_mat_vel;
+
+k = 5;
+[inds,cidx] = kmedioids(dist_mat_vel_sym,k);
+
+cidx
+
+idx_vel = inds;
+
+idx_temp = idx_vel;
+figure(36)
+histogram(inds)
+
+
+%% Kmediods - Fstretch
+
+% slice the data points
+I = primtable.is_bf~=0;
+
+dist_mat_fstr_sym = dist_mat_fstr'+dist_mat_fstr;
+
+k = 3;
+[inds,cidx] = kmedioids(dist_mat_fstr_sym(I,I),k);
+
+cidx
+
+idx_fstr = inds;
+
+idx_temp = idx_fstr;
+figure(36)
+histogram(inds)
+
+%% Kmediods - Fstretch+vel_y
+
+
+dist_mat_fv = dist_mat_fstr/max(dist_mat_fstr(:)) + dist_mat_vel/max(dist_mat_vel(:));
+dist_mat_fv = dist_mat_fv'+dist_mat_fv;
+
+k = 6;
+[inds,cidx] = kmedioids(dist_mat_fv,k);
+
+cidx
+
+idx_fv = inds;
+
+idx_temp = idx_fv;
+figure(36)
+histogram(inds)
 
 %% DistMatrix
 
