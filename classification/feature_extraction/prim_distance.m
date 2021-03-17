@@ -17,7 +17,7 @@ function fdist = get_force_dist(prim1, prim2)
     
 fdist = zeros(1,4);
 
-fdist(1) = dtw(prim1.fstr(:,1), prim2.fstr(:,1)) + dtw(prim1.fstr(:,2), prim2.fstr(:,2));
+fdist(1) = dtw(prim1.fstr(:,1), prim2.fstr(:,1));% + dtw(prim1.fstr(:,2), prim2.fstr(:,2));
 
 fdist(2) = dtw(prim1.fsum(:,1), prim2.fsum(:,1)) + dtw(prim1.fsum(:,2), prim2.fsum(:,2));
 
@@ -39,7 +39,7 @@ kdist = zeros(1,4);
 
 kdist(1) = dtw(prim1.pos(:,1),prim2.pos(:,1)) + dtw(prim1.pos(:,2),prim2.pos(:,2));
 kdist(2) = dtw(prim1.orient, prim2.orient);
-kdist(3) = dtw(prim1.vel(:,1), prim2.vel(:,1)) + dtw(prim1.vel(:,2), prim2.vel(:,2));
+kdist(3) = dtw(prim1.vel(:,2), prim2.vel(:,2)); %dtw(prim1.vel(:,1), prim2.vel(:,1));
 kdist(4) = dtw(prim1.angvel, prim2.angvel);
 
 end
@@ -65,3 +65,7 @@ angdist(2) = min(a11,a12);
 
 
 end
+
+
+
+
