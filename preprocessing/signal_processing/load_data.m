@@ -53,7 +53,7 @@ function [observations,tb] = load_data(base_path)
     tb(tb.obs_id=='KOH_Sanket_9',:).initialOrient = 'xr';
     tb(tb.obs_id=='KOH_Sanket_7',:).initialOrient = 'xl';
     tb(tb.obs_id=='Sanket_Vignesh_1_3',:).initialOrient = 'xl';
-    
+    tb(tb.obs_id=='Sanket_Vignesh_1_9',:).tdec_sec = 3.5;
     
         
 end
