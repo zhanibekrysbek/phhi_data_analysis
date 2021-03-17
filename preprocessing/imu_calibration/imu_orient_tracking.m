@@ -4,7 +4,8 @@ function observations_imu = imu_orient_tracking(observations_processed)
 
 %   Also, with the same orientation data it converts the signals to spatial
 %   frame.
-
+global weight
+weight = [ 0; 0; 24.0]; % Weight of the tray
 observations_imu = adjust_time(observations_processed);
 
 for i=progress(1:numel(observations_processed), 'Title', 'IMU Orient Tracking')
@@ -143,12 +144,14 @@ function obs = imu2spatial(obs)
 end
 
 function obs = rft2spatial(obs)
+global weight
 
     axangs = interp1(obs.imu.time_steps, obs.imu.orientation, obs.rft1.time_steps);
 
     rotm = axang2rotm(axangs);
     
     force_s = zeros(size(obs.rft1.force));
+    fsum_pure = zeros(size(obs.rft1.force));
     force_s_1 = zeros(size(obs.rft1.force));
     torque_s = zeros(size(obs.rft1.torque));
     torque_s_1 = zeros(size(obs.rft1.torque));
@@ -161,6 +164,7 @@ function obs = rft2spatial(obs)
 
         force_s(i,:) = rotm(:,:,i)*obs.rft1.force(i,:)';
         force_s_1(i,:) = rotm(:,:,i)*obs.rft2.force(i,:)';
+        fsum_pure(i,:) = obs.rft1.force(i,:) + obs.rft2.force(i,:) - weight'*rotm(:,:,i);
 
         torque_s(i,:) = rotm(:,:,i)*obs.rft1.torque(i,:)';
         torque_s_1(i,:) = rotm(:,:,i)*obs.rft2.torque(i,:)';
@@ -181,6 +185,7 @@ function obs = rft2spatial(obs)
     obs.rft2.ttorqueS = ttorque_2_S;
     
     obs.fsum.forceS = obs.rft1.forceS + obs.rft2.forceS;
+    obs.fsum.force_pure = fsum_pure;
     obs.fstretch.forceS = obs.rft1.forceS - obs.rft2.forceS;
     
     obs.fsum.ttsum_S = ttsum_S;
