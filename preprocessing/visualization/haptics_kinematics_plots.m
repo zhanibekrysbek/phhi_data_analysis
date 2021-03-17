@@ -170,17 +170,35 @@ st = struct2table(DetectedEvents);
 st = convertvars(st, {'obs_id'}, 'string');
 M = containers.Map(st.obs_id, st.events);
 
-ind = 21;
+ind = 5;
+obs = observations_processed(ind);
+% obs.tdec_sec = 5;
+feat = features(ind);
+win_locs = M(obs.obs_id);
+
+figure(ind);
+plot_events(obs, feat, win_locs, 4)
+
+
+%%
+
+for ind = 101:112
+    
+st = struct2table(DetectedEvents);
+st = convertvars(st, {'obs_id'}, 'string');
+M = containers.Map(st.obs_id, st.events);
+
 obs = observations_processed(ind);
 feat = features(ind);
 win_locs = M(obs.obs_id);
 
-
-figure(6);
+figure(ind);
 plot_events(obs, feat, win_locs, 1)
 
-figure(7);
-plot_events(obs, feat, win_locs, 2)
+end
+
+% figure(7);
+% plot_events(obs, feat, win_locs, 2)
 
 
 
