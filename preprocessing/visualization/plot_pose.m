@@ -206,8 +206,7 @@ switch opt
 
         set(hL, 'Position',[0.51 0.03 0.01 0.01],'Units','normalized')
     
-    
-    
+   
     
     case 4
         
