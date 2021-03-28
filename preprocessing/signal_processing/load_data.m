@@ -29,6 +29,7 @@ function [observations,tb] = load_data(base_path)
             observations(ind).outcomeSubject = getOutcomeSubject(observations(ind));
             observations(ind).pos_dec = getPosXdecision(observations(ind));
             observations(ind).tdec_sec = round(observations(ind).tdec_sec,2);
+            observations(ind).tdec_sec = max(3, observations(ind).tdec_sec);
             
             ind = ind+1;
         end
