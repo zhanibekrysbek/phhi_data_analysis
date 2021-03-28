@@ -297,37 +297,50 @@ sgtitle(sprintf('Cluster (k=%d) Visualization with 95%% Conf Interval', k), 'Int
 
 %% Plot Fstr-vel Shapes
 
-ks = unique(idx_temp);
+ks = unique(primtable.cluster);
 
 for j = 1:numel(ks)
     
-    sl = primtable(idx_temp==ks(j),:);
+    sl = primtable(primtable.cluster==ks(j),:);
     figure(300+j); 
-    subplot(1,2,1);hold on;
+    subplot(2,2,1);
     for i=1:size(sl,1)
        prim = sl.prim(i); 
        t = prim.time_steps - prim.time_steps(1);
        t = t/t(end);
        
+       if sl.exec_prim(i)
+            plot(t, prim.fstr(1:numel(t)),'r', 'LineWidth', 0.5);
+            hold on;
+            continue;
+       end
+       
        plot(t, prim.fstr(1:numel(t)),'b', 'LineWidth', 0.5);
+       hold on;
        
     end
     
-    ylim([-50, 70])
+    ylim([-20, 40])
     hold off; grid on;
     ylabel('F_{str}')
     subtitle('F_{str}');
     
     
 %     figure(400+j);
-    subplot(1,2,2);
-    hold on;
+    subplot(2,2,2);
     for i=1:size(sl,1)
        prim = sl.prim(i); 
        t = prim.time_steps - prim.time_steps(1);
        t = t/t(end);
 
+        if sl.exec_prim(i)
+            plot(t, prim.vel(1:numel(t),2),'r', 'LineWidth', 0.5);
+            hold on;
+            continue;
+        end
+       
        plot(t, (prim.vel(1:numel(t),2)),'b', 'LineWidth', 0.5);
+       hold on;
        
     end
     ylim([-0.7, 0.7])
@@ -335,8 +348,35 @@ for j = 1:numel(ks)
     subtitle('v_{y}');
     sgtitle(sprintf('cluster: %d #points: %d', ks(j), size(sl,1)));
     hold off;
-%     title(sprintf('cluster: %d', ks(j)));
-%     hold off; grid on;ylabel('v_{y}');
+    
+    [hist_mat_f,hist_mat_v] = signal_histogram(sl);
+    
+    subplot(2,2,3);
+    heatmap(hist_mat_f, 'Colormap', jet);
+    
+    subplot(2,2,4);
+    heatmap(hist_mat_v, 'Colormap', jet);
+    
 end
+
+%% Visualize dist_mat heatmaps
+
+dist_mat_temp = dist_mat_fv;
+
+dist_mat_temp([196],:) = []; 
+dist_mat_temp(:,[196]) = [];
+
+idx_temp1 = idx_temp;
+idx_temp1([196]) = [];
+
+[B,I] = sort(idx_temp1);
+
+figure(499)
+heatmap(dist_mat_temp(I,I), 'Colormap', turbo);
+
+
+
+
+
 
 
