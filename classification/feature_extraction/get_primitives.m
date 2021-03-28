@@ -32,8 +32,9 @@ varnames =  {'obs_id','obs_ind', 'seqnum',...
 
 % Initialize primitives struct
 primitives(N) = struct('prim', [], 'prim_id', [], 'obs_id', [], ...
-    'obs_ind', [], 'inst_dec', [], 'is_bf', [], 'dec_prim', [], 'seqnum', [],...
-    'outcome',  [], 'exp_dir', [], ...
+    'obs_ind', [], 'Nprim', [], 'inst_dec', [], 'is_bf', [], 'dec_prim', [], 'seqnum', [],...
+    'outcome',  [], 'exp_dir', [], 'exec_prim', [], 'duration',[], ...
+    'tdec_sec', [], 'cluster', [],...
     'lfcons', [], 'schange', [], 'fstr_max', [], 'fstr_min', [], ...
     'fstr_mean', [], 'fstr_t_extr', [],  'fstr_std', [], ...
     'fsum_min', [], 'fsum_mean', [], 'fsum_max', [], 'fsum_std', [],  ...
@@ -74,7 +75,8 @@ for obs_ind = progress(1:numel(DetectedEvents), 'Title', 'GettingPrimitives')
         primitives(ev_ind).duration = ev(2)-ev(1);
         
         primitives(ev_ind) = get_prim_info(primitives(ev_ind), obs);
-        
+        primitives(ev_ind).Nprim = size(ev_mat,1);
+        primitives(ev_ind).tdec_sec = obs.tdec_sec;
         
     end
 end
@@ -85,6 +87,7 @@ primtable = convertvars(primtable, 'obs_id', 'string');
 
 primtable.is_bf = is_bf(primtable);
 primtable.dec_prim = dec_prim(primtable);
+primtable.exec_prim = get_exec_primitives(primtable);
 end
 
 
@@ -166,7 +169,7 @@ function res = get_prim_info(res, obs)
     [a,b] = max(abs(prim.vel(:,2)));
     vel_extr = prim.vel(b,2);
     exp_dir = 0; % Neutral
-    if abs(vel_extr) >= 0.05
+    if abs(vel_extr) >= 0.085
         % vy > 0 - left
         % exp_dir= -1 - left
         % exp_dir= 1 - right 
@@ -258,7 +261,7 @@ function res = get_prim_info(res, obs)
 
 end
 
-
+% is back and forth interaction
 function arr = is_bf(primtable)
     
     arr = zeros([height(primtable),1]);
@@ -268,6 +271,9 @@ function arr = is_bf(primtable)
 
 end
 
+
+% find the primitive where exp_dir sequence has first element without
+% changing sign.
 function arr = dec_prim(primtable)
     
     arr = zeros([height(primtable),1]);
@@ -299,7 +305,39 @@ end
 
 
 
+function exec_prim = get_exec_primitives(primtable)
 
+    exec_prim = zeros([height(primtable),1]);
+    
+    % loop over trajectories
+    for ind = 1:max(primtable.obs_ind)
+        sl = primtable(primtable.obs_ind==ind,:);
+        exec_prim(primtable.obs_ind==ind) = find_exec_prim(sl);
+    end
+
+end
+
+function arr = find_exec_prim(sl)
+
+arr = zeros([size(sl,1),1]);
+
+if size(sl,1) == 1
+    return;
+end
+
+dec_prim = sl.dec_prim;
+% index of dec prim
+j = find(dec_prim);
+if ~isempty(j)
+    for ind = size(sl,1):-1:j+1
+        
+        if sl.v_std(ind,2) < 0.2 || abs(sl.v_mean(ind,2)) > 0.2
+            arr(ind) = 1;
+        end
+    end
+end
+
+end
 
 
 
