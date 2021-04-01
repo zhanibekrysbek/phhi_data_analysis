@@ -1,12 +1,10 @@
 
-
-
 clc;clear;
 base_path = '../../data/preprocessed_v2_2';
 
 [observations_processed,tb] = load_data(base_path);
 
-load('../../data/events/DetectedEvents_0.5sec.mat');
+load('../../data/events/DetectedEvents_v2.mat');
 
 DetectedEvents_original = DetectedEvents;
 DetectedEvents = event_correction(DetectedEvents, observations_processed);
@@ -61,10 +59,10 @@ dist_mat_vel = zeros(primNum,primNum);
 dist_mat_ang = zeros(primNum,primNum);
 
 for ind1 = progress(1:primNum, 'Title', 'PrimDistanceMatrix')
-    prim1 = primitives_norm(ind1).prim;
+    prim1 = primitives(ind1).prim;
     
     for ind2 = ind1:primNum
-        prim2 = primitives_norm(ind2).prim;
+        prim2 = primitives(ind2).prim;
         dist = prim_distance(prim1, prim2);
         
         dist_mat(ind1,ind2) = sum(dist);
@@ -98,7 +96,7 @@ histogram(inds)
 
 dist_mat_vel_sym = dist_mat_vel'+dist_mat_vel;
 
-k = 5;
+k = 6;
 [inds,cidx] = kmedioids(dist_mat_vel_sym,k);
 
 cidx
@@ -113,12 +111,12 @@ histogram(inds)
 %% Kmediods - Fstretch
 
 % slice the data points
-I = primtable.is_bf~=0;
+% I = primtable.is_bf~=0;
 
 dist_mat_fstr_sym = dist_mat_fstr'+dist_mat_fstr;
 
-k = 3;
-[inds,cidx] = kmedioids(dist_mat_fstr_sym(I,I),k);
+k = 6;
+[inds,cidx] = kmedioids(dist_mat_fstr_sym,k);
 
 cidx
 
@@ -131,7 +129,7 @@ histogram(inds)
 %% Kmediods - Fstretch+vel_y
 
 
-dist_mat_fv = dist_mat_fstr/max(dist_mat_fstr(:)) + dist_mat_vel/max(dist_mat_vel(:));
+dist_mat_fv = dist_mat_fstr/max(dist_mat_fstr(:)) + 0.5*dist_mat_vel/max(dist_mat_vel(:));
 dist_mat_fv = dist_mat_fv'+dist_mat_fv;
 
 k = 6;
@@ -144,6 +142,34 @@ idx_fv = inds;
 idx_temp = idx_fv;
 figure(36)
 histogram(inds)
+
+
+%% Kmedioids - no exec_prim
+I = primtable.exec_prim == 0;
+
+dist_mat_fv = dist_mat_fstr/max(dist_mat_fstr(:)) + 0.5*dist_mat_vel/max(dist_mat_vel(:));
+dist_mat_fv = dist_mat_fv'+dist_mat_fv;
+
+k = 4;
+[inds,cidx] = kmedioids(dist_mat_fv(I,I),k);
+
+
+k2 = 2;
+[inds2,cidx] = kmedioids(dist_mat_fv(~I,~I),k2);
+
+
+primtable.cluster(I) = inds';
+primtable.cluster(~I) = inds2+k;
+
+
+tb_temp = primtable;
+
+% tb_temp = primtable(I,:);
+% tb_temp.cluster = inds';
+
+figure(36)
+histogram([inds, inds2])
+
 
 %% DistMatrix
 
@@ -183,3 +209,6 @@ prim1 = primitives_norm(1).prim;
 prim2 = primitives_norm(2).prim;
 
 dist = prim_distance(prim1,prim2);
+
+
+
