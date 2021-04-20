@@ -34,7 +34,7 @@ varnames =  {'obs_id','obs_ind', 'seqnum',...
 primitives(N) = struct('prim', [], 'prim_id', [], 'obs_id', [], ...
     'obs_ind', [], 'Nprim', [], 'inst_dec', [], 'is_bf', [], 'dec_prim', [], 'seqnum', [],...
     'outcome',  [], 'exp_dir', [], 'exec_prim', [], 'duration',[], ...
-    'tdec_sec', [], 'cluster', [],...
+    'tdec_sec', [], 'cluster', [], 't_start', [], 't_end', [],...
     'lfcons', [], 'schange', [], 'fstr_max', [], 'fstr_min', [], ...
     'fstr_mean', [], 'fstr_t_extr', [],  'fstr_std', [], ...
     'fsum_min', [], 'fsum_mean', [], 'fsum_max', [], 'fsum_std', [],  ...
@@ -88,6 +88,8 @@ primtable = convertvars(primtable, 'obs_id', 'string');
 primtable.is_bf = is_bf(primtable);
 primtable.dec_prim = dec_prim(primtable);
 primtable.exec_prim = get_exec_primitives(primtable);
+primtable.cluster = zeros(height(primtable),1);
+
 end
 
 
@@ -148,6 +150,9 @@ prim.obs_id = obs.obs_id;
 
 prim.duration = win_loc(2) - win_loc(1);
 
+prim.t_start = win_loc(1);
+prim.t_end = win_loc(2);
+
 end
 
 
@@ -169,7 +174,7 @@ function res = get_prim_info(res, obs)
     [a,b] = max(abs(prim.vel(:,2)));
     vel_extr = prim.vel(b,2);
     exp_dir = 0; % Neutral
-    if abs(vel_extr) >= 0.085
+    if abs(vel_extr) >= 0.09
         % vy > 0 - left
         % exp_dir= -1 - left
         % exp_dir= 1 - right 
@@ -305,6 +310,8 @@ end
 
 
 
+
+
 function exec_prim = get_exec_primitives(primtable)
 
     exec_prim = zeros([height(primtable),1]);
@@ -317,6 +324,8 @@ function exec_prim = get_exec_primitives(primtable)
 
 end
 
+
+
 function arr = find_exec_prim(sl)
 
 arr = zeros([size(sl,1),1]);
@@ -326,13 +335,21 @@ if size(sl,1) == 1
 end
 
 dec_prim = sl.dec_prim;
+
 % index of dec prim
 j = find(dec_prim);
 if ~isempty(j)
     for ind = size(sl,1):-1:j+1
-        
         if sl.v_std(ind,2) < 0.2 || abs(sl.v_mean(ind,2)) > 0.2
             arr(ind) = 1;
+        end
+        
+        if sl.Nprim(ind) >= 4 && sum(arr) == 2
+            break;
+        end
+        
+        if sl.Nprim(ind) <= 3  && sum(arr) == 1
+            break;
         end
     end
 end
