@@ -155,10 +155,10 @@ for ind=progress(1:numel(observations_processed), 'Title', 'Events')
     feat = features(ind);
     win_locs = M(obs.obs_id);
     
-    plot_events(obs, feat, win_locs, 1)
+    plot_events(obs, feat, win_locs, 4)
     saveas(gcf, [fig_path, '/mixplot/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'events', '.jpg'])
-    plot_events(obs, feat, win_locs, 2)
-    saveas(gcf, [fig_path, '/angles/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'events', '.jpg'])
+%     plot_events(obs, feat, win_locs, 2)
+%     saveas(gcf, [fig_path, '/angles/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'events', '.jpg'])
 
 end
 figure('visible','on');
@@ -170,7 +170,7 @@ st = struct2table(DetectedEvents);
 st = convertvars(st, {'obs_id'}, 'string');
 M = containers.Map(st.obs_id, st.events);
 
-ind = 5;
+ind = 66;
 obs = observations_processed(ind);
 % obs.tdec_sec = 5;
 feat = features(ind);
@@ -182,24 +182,25 @@ plot_events(obs, feat, win_locs, 4)
 
 %%
 
-for ind = 101:112
-    
-st = struct2table(DetectedEvents);
-st = convertvars(st, {'obs_id'}, 'string');
-M = containers.Map(st.obs_id, st.events);
+arr = unique(primtable.obs_ind(primtable.exec_prim==1))';
 
-obs = observations_processed(ind);
-feat = features(ind);
-win_locs = M(obs.obs_id);
+for ind = arr(11:20)
 
-figure(ind);
-plot_events(obs, feat, win_locs, 1)
+    st = struct2table(DetectedEvents);
+    st = convertvars(st, {'obs_id'}, 'string');
+    M = containers.Map(st.obs_id, st.events);
+
+    obs = observations_processed(ind);
+    feat = features(ind);
+    win_locs = M(obs.obs_id);
+
+    figure(ind);
+    plot_events(obs, feat, win_locs, 4);
 
 end
 
 % figure(7);
 % plot_events(obs, feat, win_locs, 2)
-
 
 
 % figure(1)

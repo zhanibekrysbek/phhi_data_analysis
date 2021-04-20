@@ -322,10 +322,13 @@ switch opt
     case 4
         
         % Mix plot with Force Displacement
-        I = feat.angles.time_steps >= win_locs(1,1) & feat.angles.time_steps <= obs.tdec_sec;
+        fsum = obs.fsum.forceS(1:10:end,:);
+        
+        I = fsum(:,3)' >= 1 & feat.angles.time_steps <= obs.tdec_sec;
+%         I = feat.angles.time_steps >= win_locs(1,1) & feat.angles.time_steps <= obs.tdec_sec;
         tang = feat.angles.time_steps(I);
         fstr = obs.fstretch.force(1:10:end,1:2); fstr = fstr(I,:);
-        fsum = obs.fsum.forceS(1:10:end,:); fsum = fsum(I,:);
+        fsum = fsum(I,:);
         f1 = obs.rft1.forceS(1:10:end,1:2); f1 = f1(I,:);
         f2 = obs.rft2.forceS(1:10:end,1:2); f2 = f2(I,:);
         tau1 = obs.rft1.ttorqueS(1:10:end,3); tau1 = tau1(I,:);
