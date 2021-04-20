@@ -215,7 +215,7 @@ legend(num2str([1:k]'));
 figure(77);
 
 % numF = 4;
-cmap = hsv(k);
+cmap = hsv(6);
 % varnames = {'fstr_max', 'fstr_min', 'outcome', 'fsum_max', 'exp_dir', ...
 %         'inst_dec', 'lfcons', 'seqnum'};
 
@@ -224,9 +224,9 @@ varnames = {'fstr_max', 'fstr_min', 'vx_gain', 'vy_gain', ...
         'exp_dir', 'inst_dec', 'seqnum', 'outcome'};
 
 
-for i=1:k
+for i=1:6
     
-    cl = primtable(idx_temp==i,:);
+    cl = primtable(primtable.cluster==i,:);
     
 %     clfeat = table2array(cl(:,varnames));
     clfeat = [ cl.fstr_max(:,1)  cl.fstr_min(:,1)...
@@ -362,12 +362,15 @@ end
 %% Visualize dist_mat heatmaps
 
 dist_mat_temp = dist_mat_fv;
+idx_temp = primtable.cluster;
 
-dist_mat_temp([196],:) = []; 
-dist_mat_temp(:,[196]) = [];
+outliers = [223,224];
+
+dist_mat_temp(outliers,:) = []; 
+dist_mat_temp(:,outliers) = [];
 
 idx_temp1 = idx_temp;
-idx_temp1([196]) = [];
+idx_temp1(outliers) = [];
 
 [B,I] = sort(idx_temp1);
 
