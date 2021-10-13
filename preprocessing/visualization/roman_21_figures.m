@@ -142,8 +142,8 @@ color_map = summer(size(win_locs,1));
 figure(2)
 % First Column
 subplot(srows, scols, 1);
-a1 = plot(tang, feat.angles.angles(I,2),'b','LineWidth', 1.5); hold on; 
-a2 = plot(tang, feat.angles.angles(I,3), 'm','LineWidth', 1.5); grid on; 
+a1 = plot(tang, feat.angles.angles(I,2),'b','LineWidth', 2); hold on; 
+a2 = plot(tang, feat.angles.angles(I,3), 'm','LineWidth', 2); grid on; 
 ylim([0 180]);
 xlim([tmin, tmax]);
 box off;
@@ -159,10 +159,10 @@ for i = 1:size(win_locs,1)
     end
         
     text(mean(win_locs(i,:))-offset, 25, ...
-    ['\lambda=', num2str(round(lfcons(i),2))],'FontSize', 11);
+    ['\lambda=', num2str(round(lfcons(i),2))],'FontSize', 15);
 
 end
-ylabel('angle [deg]', 'FontSize', 13)
+ylabel('angle [deg]', 'FontSize', 16)
 legend({'\alpha_1', '\alpha_2'}, 'NumColumns', 2)
 xticks([])
 yticks([0,180])
@@ -170,7 +170,7 @@ hold off;
 
 
 subplot(srows, scols, 2);
-plot(tang, fstr(:,1), 'b','LineWidth', 1.5); grid on; hold on;
+plot(tang, fstr(:,1), 'b','LineWidth', 2); grid on; hold on;
 ymax = max(20,max(abs(fstr(:))+0.4));
 ylim([-ymax, 13]);
 xlim([tmin, tmax]);
@@ -179,18 +179,18 @@ for i = 1:size(win_locs,1)
     a.FaceAlpha = 0.2;
     a.EdgeAlpha = 0.2;
     a.BaseLine.Visible = false;
-    text(mean(win_locs(i,:))-0.05, -11, cluster_names{seq(i)}, 'FontWeight', 'bold', 'FontSize', 13);
+    text(mean(win_locs(i,:))-0.05, -11, cluster_names{seq(i)}, 'FontWeight', 'bold', 'FontSize', 16);
 
 end
 legend('F_{str}')
-ylabel('Force [N]', 'FontSize', 13)
+ylabel('Force [N]', 'FontSize', 16)
 box off;
 xticks([])
 hold off;
 
 
 subplot(srows, scols, 3);
-plot(tang, obs.pose123.linvel(I,1), 'b', tang, obs.pose123.linvel(I,2), 'm','LineWidth', 1.5); 
+plot(tang, obs.pose123.linvel(I,1), 'b', tang, obs.pose123.linvel(I,2), 'm','LineWidth', 2); 
 hold on; grid on;
 ymax = max(0.5, max(max(abs(obs.pose123.linvel(I,:)))));
 ylim([-ymax ymax]);
@@ -201,9 +201,9 @@ for i = 1:size(win_locs,1)
     a.EdgeAlpha = 0.2;
     a.BaseLine.Visible = false;
 end
-ylabel('velocity [m/s]', 'FontSize', 13)
+ylabel('velocity [m/s]', 'FontSize', 16)
 box off;
-xlabel('time [sec]', 'FontSize', 13)
+xlabel('time [sec]', 'FontSize', 16)
 legend({'v_x', 'v_y'}, 'Location', 'SouthEast', 'NumColumns', 2)
 xticks(unique(win_locs(:))')
 
