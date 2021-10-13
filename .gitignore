@@ -1,15 +1,30 @@
+
+# Preprocessed Data	
 data/preprocessed_v1
 data/preprocessed_v1_1
 data/preprocessed_v2
 data/preprocessed_v2_1
+
+
+# Auto Save files
 preprocessing/signal_processing/*.asv
+*.asv
+*/*.asv
+
+# Archives and backup
 preprocessing/signal_processing/ARCHIVE/
+preprocessing/imu_calibration/ARCHIVE
+data/annotation/BAK
+
+
+# Video Files
+data/vids
+
+# DS_store
 preprocessing/signal_processing/.DS_Store
 */.DS_Store
 *.DS_Store
-*.asv
-*/*.asv
+
+# jupyter checkpoints
 */.ipynb_checkpoints
 */*/.ipynb_checkpoints
-preprocessing/imu_calibration/ARCHIVE
-data/annotation/BAK
