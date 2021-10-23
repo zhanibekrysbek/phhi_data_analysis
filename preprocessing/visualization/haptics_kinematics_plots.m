@@ -1,6 +1,6 @@
 
 
-% clc;clear;
+clc;clear;
 base_path = '../../data/preprocessed_v2_2';
 
 [observations_processed,tb] = load_data(base_path);
@@ -141,6 +141,7 @@ figure('visible','on');
 
 
 %% Events
+
 fig_path = '../../data/plots/plots_preprocessed_v2_1/events/';
 % features = haptic_features(observations_processed);
 
@@ -162,6 +163,27 @@ for ind=progress(1:numel(observations_processed), 'Title', 'Events')
 
 end
 figure('visible','on');
+
+
+
+
+
+%% Wrench and Kinematics test
+
+fig_path = '../../data/plots/plots_preprocessed_v2_1/force/';
+
+figure('visible','off', 'Position', [60 300 1020 840]);
+for ind=progress(1:numel(observations_processed),'Title', 'Force Plots')
+    obs = observations_processed(ind);
+    
+    plot_rfts(obs,3)
+    saveas(gcf, [fig_path, 'haptics_se3/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'haptics_se3', '.jpg'])
+    
+    plot_rfts(obs,4)
+    saveas(gcf, [fig_path, 'haptics_kinematics_se2/', obs.obs_id, '_', obs.traj_type, '_', obs.motion_type,'_', 'haptics_kinematics_se2', '.jpg'])
+end
+
+
 
 %%
 % features = haptic_features(observations_processed);
