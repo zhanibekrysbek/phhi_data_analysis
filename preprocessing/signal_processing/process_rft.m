@@ -57,19 +57,23 @@ end
 
 
 function obs = process_torques(obs)
-    
+% vector from handle to center
 rv1 = [ 0.235, 0, -0.027];
 rv2 = [-0.235, 0, -0.027];
 
-tcomp1 = cross(obs.rft1.torque, repmat(rv1,[numel(obs.rft1.time_steps), 1]));
-tcomp2 = cross(obs.rft2.torque, repmat(rv2,[numel(obs.rft2.time_steps), 1]));
+% tcomp1 = cross(obs.rft1.torque, repmat(rv1,[numel(obs.rft1.time_steps), 1]));
+% tcomp2 = cross(obs.rft2.torque, repmat(rv2,[numel(obs.rft2.time_steps), 1]));
+
+% Bug fix
+tcomp1 = cross(repmat(rv1,[numel(obs.rft1.time_steps), 1]), obs.rft1.force);
+tcomp2 = cross(repmat(rv2,[numel(obs.rft2.time_steps), 1]), obs.rft2.force);
 
 obs.rft1.tcomp = tcomp1;
 obs.rft2.tcomp = tcomp2;
-obs.rft1.ttorque = obs.rft1.torque+tcomp1;
-obs.rft2.ttorque = obs.rft2.torque+tcomp2;
+obs.rft1.ttorque = obs.rft1.torque + tcomp1;
+obs.rft2.ttorque = obs.rft2.torque + tcomp2;
 
-obs.fsum.ttsum = obs.rft2.torque+tcomp2 + obs.rft1.torque+tcomp1;
+obs.fsum.ttsum = obs.rft2.torque+tcomp2 + obs.rft1.torque + tcomp1;
 
 end
 
