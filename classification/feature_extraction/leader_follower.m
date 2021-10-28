@@ -4,7 +4,7 @@ base_path = '../../data/preprocessed_v2_2';
 
 [observations_processed,tb] = load_data(base_path);
 
-load('../../data/DetectedEvents.mat');
+load('../../data/events/DetectedEvents_v2.mat');
 
 [features] = haptic_features(observations_processed);
 

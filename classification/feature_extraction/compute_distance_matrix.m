@@ -16,8 +16,6 @@ DetectedEvents = event_correction(DetectedEvents, observations_processed);
 % st = convertvars(st, {'obs_id'}, 'string');
 % M = containers.Map(st.obs_id, st.events);
 
-
-
 %% 
 
 [primitives, primtable, primNum] = get_primitives(observations_processed, DetectedEvents);

@@ -19,7 +19,7 @@ function [X,Y] = extractSWFeatures(observations_processed, tb, option)
 %               5 - Pure Haptic Signals
 %                   30 separate signals
 %               6 - 
-%                   Sliding Windwos until tdec_sec
+%                   Sliding Windows until tdec_sec
 %
 %
 
