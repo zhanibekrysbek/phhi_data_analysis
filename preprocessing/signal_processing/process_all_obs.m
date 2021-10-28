@@ -31,12 +31,12 @@ for i=progress(1:obsNum)%numel(observations_processed), 'Title','Preprocessing')
 end
 % profile viewer;
 
-%% Run IMU orientation tracking
+% Run IMU orientation tracking
 
 observations_imufilt = imu_orient_tracking(observations_processed);
 
 
-%% Save the data 1 by 1. GitHub has a strict limit to file size 100MB
+% Save the data 1 by 1. GitHub has a strict limit to file size 100MB
 base_path = '../../data/preprocessed_v2_2/';
 
 for i=progress(1:numel(observations_imufilt), 'Title', 'Saving the data')

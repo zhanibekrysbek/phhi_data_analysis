@@ -1,7 +1,5 @@
 function obs = get_fsum(obs)
 
-    
-    
     obs = get_force(obs);
     obs = get_torque(obs);
 %     obs = rft_to_spatial(obs);
@@ -16,6 +14,10 @@ function obs = get_force(obs)
     obs.fsum.time_steps = obs.rft1.time_steps;
     
     obs.fstretch.force = obs.rft1.force - obs.rft2.force;
+    obs.fstretch.torque = obs.rft1.ttorque - obs.rft2.ttorque;
+
+%     obs.fstretch.forceS = obs.rft1.forceS - obs.rft2.forceS;
+%     obs.fstretch.torqueS = obs.rft1.ttorqueS - obs.rft2.ttorqueS;
     
     obs.fstretch.time_steps = obs.rft1.time_steps;
 end
